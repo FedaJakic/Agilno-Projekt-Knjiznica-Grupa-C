@@ -1,20 +1,40 @@
-# NWT-Shop
-Seminar iz Naprednih Web Tehnologija WebShop sa MERN stackom i Redux-om.
+# Agilno vođenje projekta ~ Grupa C ~
+## Knjižnica Marko Marulić
 
-Korišten MongoDB, MongoDB Compas, Postman
+Tehnologije:
+- ReactJS
+- NodeJS
+- PostreSQL
 
-Dependencies:
+## Paketi
 
-<h1><strong>frontend file:</strong></h1><br>
-npm install<br>
-npm i react-bootstrap<br>
-npm i axios<br>
+#### Root
 
-<h1><strong>root:</strong></h1><br>
-npm i -D nodemon concurrently<br>
-npm i dotenv<br>
-npm i mongoose<br>
-npm i express-async-handler<br>
+```http
+  npm i -D nodemon concurrently
+  npm i dotenv
+  npm i express-async-handler
+```
 
-<h1><strong>POKRETANJE</strong></h1><br>
-npm run dev<br>
+#### Fronted
+```http
+  npm install
+  npm i react-bootstrap
+  npm i axios
+```
+
+## Pokretanje
+### Cijeli projekt
+```http
+  npm run dev
+```
+
+### Samo Frontend
+```http
+  npm run client
+```
+
+### Samo Backend
+```http
+  npm run server
+```
