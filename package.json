@@ -1,0 +1,33 @@
+{
+  "name": "Agilno-vodenje-projekta-Grupa-C",
+  "version": "1.0.0",
+  "description": "mern nwt webshop",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node knjizinca-marko-marulic-api/server",
+    "server": "nodemon knjizinca-marko-marulic-api/server",
+    "client": "npm start --prefix knjiznica-marko-marulic",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "data:import": "node backend/seeder",
+    "data:destroy": "node backend/seeder -d"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FedaJakic/NWT-Shop.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FedaJakic/NWT-Shop/issues"
+  },
+  "homepage": "https://github.com/FedaJakic/NWT-Shop#readme",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.17.3"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0",
+    "nodemon": "^2.0.22"
+  }
+}
