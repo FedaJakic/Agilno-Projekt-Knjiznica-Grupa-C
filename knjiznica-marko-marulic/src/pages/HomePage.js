@@ -6,7 +6,8 @@ const HomeScreen = () => {
     <>
       <h1>Agilno vođenje projekta</h1>
       <Row>
-        <p>HomePage</p>
+        <p>Home</p>
+        <p>Stipe</p>
       </Row>
     </>
   );
