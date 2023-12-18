@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import HomePage from "./pages/HomePage";
+import Prijava from "./pages/Prijava";
 
 const App = () => {
   return (
@@ -14,6 +15,11 @@ const App = () => {
           <Route
             path='/'
             component={HomePage}
+            exact
+          />
+          <Route
+            path='/prijava'
+            component={Prijava}
             exact
           />
         </Container>
