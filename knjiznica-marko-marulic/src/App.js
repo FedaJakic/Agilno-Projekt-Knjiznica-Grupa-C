@@ -5,6 +5,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import HomePage from "./pages/HomePage";
 import Prijava from "./pages/Prijava";
+import Registracija from "./pages/Registracija";
 
 const App = () => {
   return (
@@ -20,6 +21,11 @@ const App = () => {
           <Route
             path='/prijava'
             component={Prijava}
+            exact
+          />
+          <Route
+            path='/registracija'
+            component={Registracija}
             exact
           />
         </Container>
