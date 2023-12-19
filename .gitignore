@@ -12,6 +12,9 @@ node_modules/
 # production
 /build
 
+# db config
+/knjizinca-marko-marulic-api/config.js
+
 # misc
 .DS_Store
 .env
