@@ -19,6 +19,29 @@ const Registracija = () => {
       password,
       datumRodjenja
     );
+
+    if (!ime || !prezime || !email || !password || !datumRodjenja) {
+      console.log("Empty fields are not allowed");
+      return;
+    }
+
+    fetch("http://localhost:5000/api/registracija", {
+        method: "POST",
+        body: JSON.stringify({
+            ime: ime,
+            prezime: prezime,
+            email: email,
+            password: password,
+            datumRodjenja: datumRodjenja
+        }),
+        headers: {"Content-type": "application/json;charset=UTF-8"}
+    })
+    .then((resp)=>resp.json())
+    .then((data)=>{
+            console.log("User Registered!");
+            //navigate('/prijava'); -> Prebacit korisnika na login
+    })
+    .catch((err)=>console.log(err));
   };
 
   return (
