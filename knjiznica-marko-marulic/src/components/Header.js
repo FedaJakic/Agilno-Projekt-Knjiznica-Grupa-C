@@ -1,8 +1,13 @@
 import React from "react";
 import { Navbar, Nav, Container, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 
 const Header = () => {
+  function redirect() {
+    localStorage.removeItem("token");
+    //redirect('/');
+  }
+
   return (
     <header>
       <Navbar
@@ -54,6 +59,7 @@ const Header = () => {
                 Profil
               </Nav.Link>
               <Button
+                onClick={redirect}
                 variant="warning"
                 size="sm"
                 style={{

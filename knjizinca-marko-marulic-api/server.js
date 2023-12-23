@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import productRoutes from "./controllers/productRoutes.js";
-import userVerification from "./controllers/userVerification.js";
+import loginAndRegister from "./controllers/loginAndRegister.js";
 import { testConnection, syncDatabase } from './db.js';
 
 
@@ -18,7 +18,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/knjiznica", productRoutes);
 
-app.use("/api", userVerification);
+app.use("/api", loginAndRegister);
 
 const PORT = process.env.PORT || 5000;
 const ENVIROMENT = process.env.NODE_ENV || "development";
