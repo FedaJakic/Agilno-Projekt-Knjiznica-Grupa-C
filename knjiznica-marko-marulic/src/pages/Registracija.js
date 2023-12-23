@@ -3,6 +3,11 @@ import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 
 const Registracija = () => {
+  if (localStorage.getItem("token") != null) {
+    //navigate('/'); maknit se ca od tu - vec smo prijavljeni
+    return;
+  }
+  
   const [ime, setIme] = useState("");
   const [prezime, setPrezime] = useState("");
   const [email, setEmail] = useState("");
