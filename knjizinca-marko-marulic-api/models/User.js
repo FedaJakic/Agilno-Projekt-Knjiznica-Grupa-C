@@ -25,7 +25,7 @@ export const User = sequelize.define('User', {
     role_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: Role, 
+        model: 'Role', 
         key: 'id',
       },
     },
