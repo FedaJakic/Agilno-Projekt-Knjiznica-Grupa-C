@@ -3,20 +3,19 @@ import dotenv from "dotenv";
 import cors from "cors";
 import productRoutes from "./controllers/productRoutes.js";
 import loginAndRegister from "./controllers/loginAndRegister.js";
-import { testConnection, syncDatabase } from './db.js';
 import bookRoutes from "./controllers/bookRoutes.js";
-import loginAndRegister from "./controllers/loginAndRegister.js";
+import { testConnection, syncDatabase } from './db.js';
 
 dotenv.config();
 
 const app = express();
-app.use(express.json())
 app.use(
   cors({
     origin: "http://localhost:3000", // Zamijenite sa stvarnom domenom vašeg klijenta
     credentials: true,
   })
 );
+app.use(express.json())
 
 app.get("/", (req, res) => {
   res.send("API is running...");
