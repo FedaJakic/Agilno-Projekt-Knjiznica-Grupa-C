@@ -6,7 +6,7 @@ const Header = () => {
   return (
     <header>
       <Navbar
-        expand="lg"
+        expand='lg'
         collapseOnSelect
         style={{
           backgroundColor: "rgb(118 119 121)",
@@ -14,23 +14,26 @@ const Header = () => {
       >
         <Container>
           <Navbar.Brand>
-            <Link className="header-brand-name" to="/">
+            <Link
+              className='header-brand-name'
+              to='/'
+            >
               Knjiznica Marko Marulic
             </Link>
           </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="ms-auto d-flex align-items-center">
+          <Navbar.Toggle aria-controls='basic-navbar-nav' />
+          <Navbar.Collapse id='basic-navbar-nav'>
+            <Nav className='ms-auto d-flex align-items-center'>
               <Nav.Link
-                href="/"
+                href='/'
                 style={{
                   color: "white",
                 }}
               >
-                <i className="fa-solid fa-home"></i> Početna
+                <i className='fa-solid fa-home'></i> Početna
               </Nav.Link>
               <Nav.Link
-                href="/prijava"
+                href='/prijava'
                 style={{
                   color: "white",
                 }}
@@ -38,7 +41,7 @@ const Header = () => {
                 Prijava
               </Nav.Link>
               <Nav.Link
-                href="/registracija"
+                href='/registracija'
                 style={{
                   color: "white",
                 }}
@@ -46,7 +49,7 @@ const Header = () => {
                 Registracija
               </Nav.Link>
               <Nav.Link
-                href="/profil"
+                href='/profil'
                 style={{
                   color: "white",
                 }}
@@ -54,8 +57,8 @@ const Header = () => {
                 Profil
               </Nav.Link>
               <Button
-                variant="warning"
-                size="sm"
+                variant='warning'
+                size='sm'
                 style={{
                   height: "40px",
                 }}
