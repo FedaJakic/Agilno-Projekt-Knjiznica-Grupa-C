@@ -25,9 +25,20 @@ router.post(
   asyncHandler(async (req, res) => {
     try {
       const newBook = await Book.create(req.body);
-      res.json(newBook);
+
+      // Uspješno dodana knjiga
+      res.status(201).json({
+        success: true,
+        message: "Knjiga uspješno dodana.",
+        book: newBook,
+      });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      // Greška prilikom dodavanja knjige
+      res.status(500).json({
+        success: false,
+        message: "Greška prilikom dodavanja knjige.",
+        error: error.message,
+      });
     }
   })
 );
@@ -37,10 +48,28 @@ router.delete(
   "/books/:id",
   asyncHandler(async (req, res) => {
     try {
-      await Book.destroy({ where: { id: req.params.id } });
-      res.json({ message: "Knjiga obrisana." });
+      const deletedRows = await Book.destroy({ where: { id: req.params.id } });
+
+      if (deletedRows > 0) {
+        // Ako je barem jedan red obrisan, smatramo da je knjiga uspješno obrisana
+        res.status(200).json({
+          success: true,
+          message: "Knjiga uspješno obrisana.",
+        });
+      } else {
+        // Ako nijedan red nije obrisan, knjiga s traženim ID-om nije pronađena
+        res.status(404).json({
+          success: false,
+          message: "Knjiga s traženim ID-om nije pronađena.",
+        });
+      }
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      // Greška prilikom brisanja knjige
+      res.status(500).json({
+        success: false,
+        message: "Greška prilikom brisanja knjige.",
+        error: error.message,
+      });
     }
   })
 );

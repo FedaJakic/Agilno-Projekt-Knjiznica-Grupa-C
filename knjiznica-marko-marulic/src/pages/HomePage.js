@@ -1,6 +1,6 @@
 import React from "react";
 import HomeCarusel from "../components/HomeCarusel.js";
-import { Container, Table } from "react-bootstrap";
+import { Container, Table, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -31,6 +31,13 @@ const HomeScreen = () => {
         }}
       >
         <h1 className="text-center">Knjige</h1>
+        <p className="fw-bold fs-2 m-1" style={{ color: "#ffe6a7" }}>
+          <Link to="/addBook">
+            <Button variant="primary" className="m-2">
+              Dodaj knjigu+
+            </Button>
+          </Link>
+        </p>
         <Table bordered hover>
           <thead>
             <tr>
