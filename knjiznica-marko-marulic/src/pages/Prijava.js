@@ -3,13 +3,13 @@ import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 
 const Prijava = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   if (localStorage.getItem("token") != null) {
     //navigate('/'); maknit se ca od tu - vec smo prijavljeni
     return;
   }
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
