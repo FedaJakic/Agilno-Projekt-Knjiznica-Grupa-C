@@ -1,20 +1,64 @@
 import React from "react";
 import { Container, Form, Row, Col, Card, Button } from "react-bootstrap";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import axios from "axios";
 const AddBook = () => {
   const [title, setTitle] = useState("");
   const [releaseDate, setReleaseDate] = useState(new Date());
-  const [author, setAuthor] = useState("");
+  const [author, setAuthor] = useState([]);
   const [genre, setGenre] = useState([]);
+  const [selectedAuthorId, setSelectedAuthorId] = useState(null);
+  const [selectedGenres, setSelectedGenres] = useState([]);
 
-  const options = [
-    { value: "akcija", label: "Akcija" },
-    { value: "komedija", label: "Komedija" },
-    { value: "romantika", label: "Romantika" },
-  ];
+  useEffect(() => {
+    const fetchAuthor = async () => {
+      try {
+        const response = await axios.get("/api/knjiznica/autori/getAllAuthors");
+        setAuthor(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    const fetchGenres = async () => {
+      try {
+        const response = await axios.get("/api/knjiznica/knjige/getAllGenres");
+        setGenre(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchAuthor();
+    fetchGenres();
+  }, []);
+
+  const handleAuthorSelect = (selectedOption) => {
+    setSelectedAuthorId(selectedOption.value);
+  };
+
+  const formattedAuthors = author.map((autor) => ({
+    value: autor.id,
+    label: `${autor.id} - ${autor.first_name} ${autor.last_name}`,
+  }));
+
+  const formattedGenres = genre.map((zanr) => ({
+    value: zanr.id,
+    label: `${zanr.id} - ${zanr.name}`,
+  }));
+
+  const handleGenresSelect = (selectedOptions) => {
+    // Dohvati ID-jeve odabranih žanrova
+    const selectedGenreIds = selectedOptions.map((option) => option.value);
+
+    // Spremi ID-jeve odabranih žanrova u state varijablu
+    setSelectedGenres(selectedGenreIds);
+  };
+
   return (
     <Container>
       <Row className="vh-100 d-flex justify-content-center align-items-center">
@@ -34,11 +78,13 @@ const AddBook = () => {
                 </Form.Group>
                 <Form.Group className="mb-2 fw-bold" controlId="formBasicName">
                   <Form.Label>Autor</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Unesi autora"
-                    value={author}
-                    onChange={(e) => setAuthor(e.target.value)}
+                  <Select
+                    name="Autori"
+                    isSearchable={true}
+                    options={formattedAuthors}
+                    className="basic-single"
+                    classNamePrefix="select"
+                    onChange={handleAuthorSelect}
                   />
                 </Form.Group>
                 <Form.Group
@@ -57,9 +103,10 @@ const AddBook = () => {
                   <Select
                     isMulti
                     name="Žanrovi"
-                    options={options}
+                    options={formattedGenres}
                     className="basic-multi-select"
                     classNamePrefix="select"
+                    onChange={handleGenresSelect}
                   />
                 </Form.Group>
 

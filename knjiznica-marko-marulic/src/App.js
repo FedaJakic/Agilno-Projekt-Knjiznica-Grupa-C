@@ -9,7 +9,9 @@ import Registracija from "./pages/Registracija";
 import MyProfile from "./pages/MyProfile";
 import BookDetails from "./pages/BookDetails";
 import AddBook from "./pages/AddBook";
-
+import axios from "axios";
+axios.defaults.baseURL = "http://localhost:5000";
+axios.defaults.withCredentials = true;
 const App = () => {
   return (
     <Router>

@@ -112,4 +112,17 @@ router.get(
   })
 );
 
+// Read - Dohvaćanje zanrova
+router.get(
+  "/getAllGenres",
+  asyncHandler(async (req, res) => {
+    try {
+      const allGenres = await Genre.findAll();
+      res.json(allGenres);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  })
+);
+
 export default router;
