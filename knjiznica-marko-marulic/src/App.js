@@ -7,6 +7,7 @@ import HomePage from './pages/HomePage';
 import Prijava from './pages/Prijava';
 import Registracija from './pages/Registracija';
 import MyProfile from './pages/MyProfile';
+import ProfileEdit from './pages/ProfileEdit';
 
 const App = () => {
 	return (
@@ -32,6 +33,11 @@ const App = () => {
 					<Route
 						path='/profil'
 						component={MyProfile}
+						exact
+					/>
+					<Route
+						path='/profil-edit'
+						component={ProfileEdit}
 						exact
 					/>
 				</Container>
