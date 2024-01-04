@@ -23,8 +23,26 @@ router.get(
 router.post(
   "/addBook",
   asyncHandler(async (req, res) => {
+    console.log(req);
+    const { title, releaseDate, selectedAuthorId, selectedGenres } = req.body;
+
     try {
-      const newBook = await Book.create(req.body);
+      // Dodaj knjigu u tablicu Book
+      const newBook = await Book.create({
+        title,
+        release_date: releaseDate,
+        author_id: selectedAuthorId,
+      });
+
+      // Dohvati ID stvorene knjige
+      const createdBookId = newBook.id;
+
+      // Dodaj žanrove knjige u tablicu BookGenre
+      const bookGenres = selectedGenres.map((genreId) => ({
+        book_id: createdBookId,
+        genre_id: genreId,
+      }));
+      await BookGenre.bulkCreate(bookGenres);
 
       // Uspješno dodana knjiga
       res.status(201).json({
@@ -34,6 +52,7 @@ router.post(
       });
     } catch (error) {
       // Greška prilikom dodavanja knjige
+      console.error("Server error:", error.response.data);
       res.status(500).json({
         success: false,
         message: "Greška prilikom dodavanja knjige.",
@@ -79,33 +98,32 @@ router.get(
   "/books/:id",
   asyncHandler(async (req, res) => {
     try {
-      const book = await Book.findByPk(req.params.id, {
-        include: [Author],
+      const bookId = req.params.id;
+
+      // Dohvati knjigu po ID-u s povezanim podacima
+      const book = await Book.findByPk(bookId, {
+        include: [
+          {
+            model: Author,
+            attributes: ["first_name", "last_name"],
+          },
+          {
+            model: Genre,
+            attributes: ["name"],
+            through: {
+              model: BookGenre,
+              attributes: [],
+            },
+          },
+        ],
+        attributes: ["title", "release_date"],
       });
 
-      const bookGenres = await BookGenre.findAll({
-        where: { book_id: req.params.id },
-        include: [Genre],
-      });
+      if (!book) {
+        return res.status(404).json({ message: "Knjiga nije pronađena." });
+      }
 
-      // Strukturirajte podatke kako želite prije nego ih vratite
-      const bookData = {
-        id: book.id,
-        title: book.title,
-        release_date: book.release_date,
-        author: {
-          id: book.Author.id,
-          first_name: book.Author.first_name,
-          last_name: book.Author.last_name,
-          birth_date: book.Author.birth_date,
-        },
-        genres: bookGenres.map((bookGenre) => ({
-          id: bookGenre.Genre.id,
-          name: bookGenre.Genre.name,
-        })),
-      };
-
-      res.json(bookData);
+      res.json(book);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

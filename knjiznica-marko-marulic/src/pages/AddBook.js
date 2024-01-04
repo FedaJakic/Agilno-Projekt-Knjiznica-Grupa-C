@@ -52,11 +52,31 @@ const AddBook = () => {
   }));
 
   const handleGenresSelect = (selectedOptions) => {
-    // Dohvati ID-jeve odabranih žanrova
     const selectedGenreIds = selectedOptions.map((option) => option.value);
 
-    // Spremi ID-jeve odabranih žanrova u state varijablu
     setSelectedGenres(selectedGenreIds);
+  };
+
+  const createBook = async (e) => {
+    e.preventDefault();
+
+    console.log(title);
+    try {
+      const { data } = await axios.post("/api/knjiznica/knjige/addBook", {
+        title: title,
+        releaseDate: releaseDate,
+        selectedAuthorId: selectedAuthorId,
+        selectedGenres: selectedGenres,
+      });
+
+      if (data.error) {
+        alert(data.error);
+      } else {
+        alert("Book added successfully");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -66,7 +86,7 @@ const AddBook = () => {
           <Card className="shadow" bg="light" border="dark">
             <Card.Body>
               <Card.Title className="text-center fs-1">Dodaj knjigu</Card.Title>
-              <Form>
+              <Form onSubmit={createBook}>
                 <Form.Group className="mb-2 fw-bold" controlId="formBasicName">
                   <Form.Label>Naslov</Form.Label>
                   <Form.Control
@@ -114,6 +134,7 @@ const AddBook = () => {
                   variant="success"
                   type="submit"
                   className="fw-bold fs-5"
+                  onSubmit={createBook}
                 >
                   Dodaj knjigu
                 </Button>
