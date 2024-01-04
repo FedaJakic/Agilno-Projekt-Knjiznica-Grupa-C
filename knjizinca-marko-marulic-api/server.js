@@ -4,16 +4,25 @@ import cors from "cors";
 import productRoutes from "./controllers/productRoutes.js";
 import loginAndRegister from "./controllers/loginAndRegister.js";
 import bookRoutes from "./controllers/bookRoutes.js";
+import authorRoutes from "./controllers/authorRoutes.js";
+import bodyParser from "body-parser";
 import reservationRoutes from "./controllers/reservationRoutes.js";
 import { testConnection, syncDatabase } from './db.js';
+
 
 dotenv.config();
 
 const app = express();
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(
   cors({
     origin: "http://localhost:3000", // Zamijenite sa stvarnom domenom vašeg klijenta
     credentials: true,
+    optionSuccessStatus: 200,
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   })
 );
 app.use(express.json())
@@ -45,4 +54,5 @@ await startServer();
 app.use("/api", loginAndRegister);
 app.use("/api/knjiznica", productRoutes);
 app.use("/api/knjiznica/knjige", bookRoutes);
+app.use("/api/knjiznica/autori", authorRoutes);
 app.use("/api/reservation", reservationRoutes);

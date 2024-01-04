@@ -12,7 +12,7 @@ const BookDetails = () => {
       try {
         const response = await axios.get(`/api/knjiznica/knjige/books/${id}`);
         setBook(response.data);
-        console.log(book);
+        console.log(response.data);
       } catch (error) {
         console.error(error);
       }
@@ -34,9 +34,13 @@ const BookDetails = () => {
                 <ListGroup.Item className="  p-1">
                   {book.release_date}
                 </ListGroup.Item>
-                {/* <ListGroup.Item className="  p-1">
-                  {book.Author.first_name + " " + book.Author.last_name}
-                </ListGroup.Item> */}
+                <ListGroup.Item className="  p-1">
+                  {book.Author?.first_name + " " + book.Author?.last_name}
+                </ListGroup.Item>
+                <ListGroup.Item className="  p-1">
+                  {"Žanr: " +
+                    book.Genres?.map((genre) => genre.name).join(", ")}
+                </ListGroup.Item>
               </ListGroup>
               <Card.Text className="p-2 d-flex text-dark">
                 Opis knjige
