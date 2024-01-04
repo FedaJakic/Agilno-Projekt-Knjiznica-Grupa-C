@@ -27,7 +27,7 @@ export const Lending = sequelize.define('Lending', {
   },
   return_date: {
     type: DataTypes.DATE,
-    allowNull: false,
+    allowNull: true,
   },
 }, {
   tableName: 'lendings',

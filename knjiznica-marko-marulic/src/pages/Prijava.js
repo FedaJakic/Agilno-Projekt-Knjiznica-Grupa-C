@@ -6,9 +6,41 @@ const Prijava = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  if (localStorage.getItem("token") != null) {
+    //navigate('/'); maknit se ca od tu - vec smo prijavljeni
+    return;
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Prijavljeni ste!", email, password);
+    console.log("Pokusavate se prijaviti!", email, password);
+
+    if (!email || !password) {
+      console.log("Email or Password cannot be empty!");
+      return;
+    }
+
+    fetch("http://localhost:5000/api/prijava", {
+        method: "POST",
+        body: JSON.stringify({
+            email: email,
+            password: password
+        }),
+        headers: {"Content-type": "application/json;charset=UTF-8"}
+    })
+    .then((resp)=>resp.json())
+    .then((data)=>{
+        if (data.data.token) {
+            localStorage.setItem("token", data.data.token);
+            localStorage.setItem("admin", data.data.admin);
+            console.log("Uspijesno prijavljeni!");
+            //navigate('/');
+        } else {
+            //Ispisat poruku da stvari nisu tocno upisane
+            console.log("Authentication error");
+        }
+    })
+    .catch((err)=>console.log(err));
   };
 
   return (
