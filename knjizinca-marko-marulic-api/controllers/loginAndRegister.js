@@ -4,6 +4,10 @@ import asyncHandler from "express-async-handler";
 import { User } from "../models/User.js";
 import { verifyToken } from "../utility/authHelpers.js";
 
+import { config } from 'dotenv';
+config();
+const SECRET_KEY = process.env.SECRET_KEY;
+
 const router = express.Router();
 
 router.get(
@@ -75,8 +79,12 @@ router.post(
         try {
             //Creating jwt token
             token = jwt.sign(
-                { userId: existingUser.id, email: existingUser.email },
-                "gradskaknjiznjicamarkamarulicatajnasifra",
+            { 
+                userId: existingUser.id, 
+                email: existingUser.email,
+                role: existingUser.role_id 
+            },
+                SECRET_KEY,
                 { expiresIn: "3h" }
             );
         } catch (err) {
