@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 const HomeScreen = () => {
   const [books, setBooks] = useState([]);
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -59,6 +60,13 @@ const HomeScreen = () => {
             </Button>
           </Link>
         </p>
+        <nav className="navbar navbar-light bg-light">
+          <form className="container-fluid">
+            <div className="input-group">
+              <input type="text" onChange={(e) => setSearch(e.target.value)} className="form-control" placeholder="Search Book"  aria-describedby="basic-addon1"/>
+            </div>
+          </form>
+        </nav>
         <Table bordered hover>
           <thead>
             <tr>
@@ -67,7 +75,9 @@ const HomeScreen = () => {
             </tr>
           </thead>
           <tbody>
-            {books.map((book) => (
+            {books.filter((book) => {
+              return search.toLowerCase() === '' ? book : book.title.toLowerCase().includes(search)
+            }).map((book) => (
               <tr key={book.id}>
                 <td className="d-flex">
                   <Link
