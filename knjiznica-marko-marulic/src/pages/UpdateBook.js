@@ -2,12 +2,12 @@ import React from "react";
 import { Container, Form, Row, Col, Card, Button } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import Select from "react-select";
-import { useHistory } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import axios from "axios";
 import { toast } from "react-hot-toast";
-const AddBook = () => {
+import axios from "axios";
+const UpdateBook = () => {
   const [title, setTitle] = useState("");
   const [releaseDate, setReleaseDate] = useState(new Date());
   const [author, setAuthor] = useState([]);
@@ -17,7 +17,22 @@ const AddBook = () => {
   const [quantity, setQuantity] = useState("");
   const [description, setDescription] = useState("");
   const history = useHistory();
+  const { id } = useParams();
   useEffect(() => {
+    const fetchBook = async () => {
+      try {
+        const response = await axios.get(`/api/knjiznica/knjige/books/${id}`);
+
+        setTitle(response.data.title);
+        setReleaseDate(Date.parse(response.data.release_date));
+        setSelectedAuthorId(response.data.Author.id);
+        setQuantity(response.data.quantity);
+        setDescription(response.data.description);
+        setSelectedGenres(response.data.Genres.map((genre) => genre.id));
+      } catch (error) {
+        console.error(error);
+      }
+    };
     const fetchAuthor = async () => {
       try {
         const response = await axios.get("/api/knjiznica/autori/getAllAuthors");
@@ -36,7 +51,7 @@ const AddBook = () => {
         console.error(error);
       }
     };
-
+    fetchBook();
     fetchAuthor();
     fetchGenres();
   }, []);
@@ -57,11 +72,10 @@ const AddBook = () => {
 
   const handleGenresSelect = (selectedOptions) => {
     const selectedGenreIds = selectedOptions.map((option) => option.value);
-
     setSelectedGenres(selectedGenreIds);
   };
 
-  const createBook = async (e) => {
+  const updateBook = async (e) => {
     e.preventDefault();
     if (
       !title ||
@@ -74,26 +88,28 @@ const AddBook = () => {
       toast.error("Molimo vas da popunite sva polja.");
       return;
     }
-
     try {
-      const { data } = await axios.post("/api/knjiznica/knjige/addBook", {
-        title: title,
-        releaseDate: releaseDate,
-        selectedAuthorId: selectedAuthorId,
-        selectedGenres: selectedGenres,
-        quantity: quantity,
-        description: description,
-      });
+      const { data } = await axios.put(
+        `/api/knjiznica/knjige/updateBook/${id}`,
+        {
+          title: title,
+          releaseDate: releaseDate,
+          selectedAuthorId: selectedAuthorId,
+          selectedGenres: selectedGenres,
+          quantity: quantity,
+          description: description,
+        }
+      );
 
       if (data.success) {
-        toast.success("Book added successfully");
+        toast.success("Book updated successfully");
         history.push("/");
       } else {
         toast.error(data.message);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error adding book. Please try again.");
+      toast.error("Error updating book. Please try again.");
     }
   };
 
@@ -103,8 +119,10 @@ const AddBook = () => {
         <Col md={7} lg={5} xs={10}>
           <Card className="shadow" bg="light" border="dark">
             <Card.Body>
-              <Card.Title className="text-center fs-1">Dodaj knjigu</Card.Title>
-              <Form onSubmit={createBook}>
+              <Card.Title className="text-center fs-1">
+                Ažuriraj knjigu
+              </Card.Title>
+              <Form onSubmit={updateBook}>
                 <Form.Group className="mb-2 fw-bold" controlId="formBasicName">
                   <Form.Label>Naslov</Form.Label>
                   <Form.Control
@@ -120,6 +138,7 @@ const AddBook = () => {
                     name="Autori"
                     isSearchable={true}
                     options={formattedAuthors}
+                    value={formattedAuthors[parseInt(selectedAuthorId) - 1]}
                     className="basic-single"
                     classNamePrefix="select"
                     onChange={handleAuthorSelect}
@@ -144,6 +163,9 @@ const AddBook = () => {
                     options={formattedGenres}
                     className="basic-multi-select"
                     classNamePrefix="select"
+                    value={selectedGenres.map((genreId) =>
+                      formattedGenres.find((g) => g.value === genreId)
+                    )}
                     onChange={handleGenresSelect}
                   />
                 </Form.Group>
@@ -169,9 +191,8 @@ const AddBook = () => {
                   variant="success"
                   type="submit"
                   className="fw-bold fs-5"
-                  onSubmit={createBook}
                 >
-                  Dodaj knjigu
+                  Ažuriraj knjigu
                 </Button>
               </Form>
             </Card.Body>
@@ -182,4 +203,4 @@ const AddBook = () => {
   );
 };
 
-export default AddBook;
+export default UpdateBook;

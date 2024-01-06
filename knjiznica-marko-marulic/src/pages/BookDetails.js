@@ -41,9 +41,12 @@ const BookDetails = () => {
                   {"Žanr: " +
                     book.Genres?.map((genre) => genre.name).join(", ")}
                 </ListGroup.Item>
+                <ListGroup.Item className="  p-1">
+                  {"Broj dostupnih knjiga: " + book.quantity}
+                </ListGroup.Item>
               </ListGroup>
               <Card.Text className="p-2 d-flex text-dark">
-                Opis knjige
+                {book?.description}
               </Card.Text>
             </Card>
           </Col>
