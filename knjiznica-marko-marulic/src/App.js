@@ -9,13 +9,16 @@ import Registracija from "./pages/Registracija";
 import MyProfile from "./pages/MyProfile";
 import BookDetails from "./pages/BookDetails";
 import AddBook from "./pages/AddBook";
+import UpdateBook from "./pages/UpdateBook";
 import axios from "axios";
-import ProfileEdit from './pages/ProfileEdit';
+import { Toaster } from "react-hot-toast";
+import ProfileEdit from "./pages/ProfileEdit";
 axios.defaults.baseURL = "http://localhost:5000";
 axios.defaults.withCredentials = true;
 const App = () => {
   return (
     <Router>
+      <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
       <Header />
       <main className="py-3">
         <Container>
@@ -23,8 +26,9 @@ const App = () => {
           <Route path="/prijava" component={Prijava} exact />
           <Route path="/registracija" component={Registracija} exact />
           <Route path="/profil" component={MyProfile} exact />
-          <Route path='/profil-edit' component={ProfileEdit} exact />
+          <Route path="/profil-edit" component={ProfileEdit} exact />
           <Route path="/bookDetails/:id" component={BookDetails} exact />
+          <Route path="/updateBook/:id" component={UpdateBook} exact />
           <Route path="/addBook" component={AddBook} exact />
         </Container>
       </main>
