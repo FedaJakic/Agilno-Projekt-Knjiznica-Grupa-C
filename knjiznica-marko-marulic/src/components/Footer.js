@@ -4,9 +4,10 @@ import { Container, Row, Col } from 'react-bootstrap';
 const Footer = () => {
 	return (
 		<footer
-			style={{
-				backgroundColor: 'rgb(118 119 121)',
-			}}
+			className='bg-primary'
+			// style={{
+			// 	backgroundColor: 'rgb(118 119 121)',
+			// }}
 		>
 			<Container>
 				<Row>
@@ -17,9 +18,9 @@ const Footer = () => {
 									href='https://gkmm.hr/'
 									target='_blank'
 									rel='noreferrer'
-									className='text-decoration-none fst-italic m-2'
+									className='text-decoration-none fst-italic m-2 nav-link'
 									style={{
-										color: '#db8a2c',
+										color: '#fff',
 									}}
 								>
 									Naša stranica
@@ -29,7 +30,7 @@ const Footer = () => {
 								<p
 									className='m-2 fst-italic d-flex align-items-center'
 									style={{
-										color: '#db8a2c',
+										color: '#fff',
 									}}
 								>
 									<svg
@@ -49,7 +50,7 @@ const Footer = () => {
 								<p
 									className='m-2 fst-italic d-flex align-items-center'
 									style={{
-										color: '#db8a2c',
+										color: '#fff',
 									}}
 								>
 									<svg
@@ -73,7 +74,12 @@ const Footer = () => {
 				</Row>
 
 				<Row>
-					<Col className='text-center py-1 fw-bold'>
+					<Col
+						className='text-center py-1 fw-bold'
+						style={{
+							color: '#fff',
+						}}
+					>
 						Copyright &copy; Agilno vođenje projekta
 					</Col>
 				</Row>
