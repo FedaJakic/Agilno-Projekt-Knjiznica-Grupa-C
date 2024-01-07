@@ -44,7 +44,7 @@ router.get(
             const error = new Error(err.message);
             return next(error);
         }
-        if (!memberStatus) {
+        if (memberStatus.length > 0) {
             res.status(200).json(null);
         }
         res.status(200).json(memberStatus);
@@ -72,10 +72,48 @@ router.get(
             const error = new Error(err.message);
             return next(error);
         }
-        if (!memberStatus) {
+        if (memberStatus.length > 0) {
             res.status(200).json(null);
         }
         res.status(200).json(memberStatus[0]);
+    })
+);
+
+// @desc    Get membership status from current user
+// @route   GET /api/memberships/user/status
+// @access  Private
+router.get(
+    "/user/status",
+    verifyToken,
+    asyncHandler(async(req, res) => {
+        let memberStatus;
+
+        try {
+            memberStatus = await Membership.findAll({
+                where: {
+                    user_id: req.user.userId,
+                },
+                limit: 1,
+                order: [['subscription_end', 'DESC']]
+            })
+        } catch (err) {
+            const error = new Error(err.message);
+            return next(error);
+        }
+
+		//Check if exists
+        if (memberStatus.length > 0) {
+            res.status(200).json({status: false});
+        }
+
+		//Check if active
+		let today = new Date();
+		const dates = memberStatus[0].subscription_end.split('-');
+		let tmp = new Date(dates[0] + "-" + dates[1] + "-" + dates[2] + "T00:00:00.000Z");
+		if (tmp > today) {
+			res.status(200).json({status: false});
+		}
+        res.status(200).json({status: true});
     })
 );
 
