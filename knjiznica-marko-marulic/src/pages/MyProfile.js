@@ -1,19 +1,53 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Image, Card, Button } from 'react-bootstrap';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
-const userData = {
-	firstName: 'Ivan',
-	lastName: 'Ivić',
-	email: 'ivan.ivic@example.com',
-	dateOfBirth: '1990-01-01',
-	role: 'Admin',
-	subscriptionExpirationDate: '2025-01-01',
+const UserProfile = {
+	firstName: '',
+	lastName: '',
+	email: '',
+	dateOfBirth: '',
+	role: '',
+	subscriptionExpirationDate: '',
 	avatar: 'https://placekitten.com/200/200',
 };
 
 const MyProfile = () => {
+	const [userProfile, setUserProfile] = useState(UserProfile);
+	const userId = localStorage.getItem('id');
+
+	useEffect(() => {
+		const fetchUserProfile = async () => {
+			try {
+				const responseUser = await axios.get(
+					`/api/users/userProfile/${userId}`
+				);
+				const roleResponse = await axios.get(
+					`/api/roles/${responseUser.data.role_id}`
+				);
+				const membershipResponse = await axios.get(
+					`/api/memberships/${userId}`
+				);
+
+				setUserProfile({
+					firstName: responseUser.data.first_name,
+					lastName: responseUser.data.last_name,
+					email: responseUser.data.email,
+					dateOfBirth: responseUser.data.date_of_birth,
+					role: roleResponse.data.name,
+					subscriptionExpirationDate:
+						membershipResponse.data.subscription_end || 'Nije pretplacen',
+				});
+			} catch (error) {
+				console.error(error);
+			}
+		};
+
+		fetchUserProfile();
+	}, []);
+
 	return (
 		<Container className='mt-5'>
 			<Row>
@@ -21,21 +55,21 @@ const MyProfile = () => {
 					<Card>
 						<Card.Body>
 							<Image
-								src={userData.avatar}
+								src={'https://placekitten.com/200/200'}
 								roundedCircle
 								fluid
 							/>
-							<Card.Title className='mt-3'>{`${userData.firstName} ${userData.lastName}`}</Card.Title>
+							<Card.Title className='mt-3'>{`${userProfile.firstName} ${userProfile.lastName}`}</Card.Title>
 							<Card.Subtitle className='mb-2 text-muted'>
-								{userData.email}
+								{userProfile.email}
 							</Card.Subtitle>
 							<Card.Text>
-								<strong>Datum rođenja:</strong> {userData.dateOfBirth}
+								<strong>Datum rođenja:</strong> {userProfile.dateOfBirth}
 								<br />
-								<strong>Rola:</strong> {userData.role}
+								<strong>Rola:</strong> {userProfile.role}
 								<br />
 								<strong>Istek pretplate:</strong>{' '}
-								{userData.subscriptionExpirationDate}
+								{userProfile.subscriptionExpirationDate}
 							</Card.Text>
 						</Card.Body>
 					</Card>
