@@ -21,44 +21,14 @@ const verifyToken = (req, res, next) => {
     return next();
 }
 
-const verifyPermissionMember = (req, res, next) => {
-    User.findById(req.user.userId, (err, user) => {
-        if (err) {
-            console.log(err)
-        }
-        else {
-            if (user.role_id > 4) {
-                return res.status(403).send("No Member Rights");
-            } else {
-                return next();
-            }
-        }
-    })
-}
-
-const verifyPermissionLibrarian = (req, res, next) => {
-    User.findById(req.user.userId, (err, user) => {
-        if (err) {
-            console.log(err)
-        }
-        else {
-            if (user.role_id > 3) {
-                return res.status(403).send("No Member Rights");
-            } else {
-                return next();
-            }
-        }
-    })
-}
-
 const verifyPermissionAdmin = (req, res, next) => {
     User.findById(req.user.userId, (err, user) => {
         if (err) {
             console.log(err)
         }
         else {
-            if (user.role_id > 2) {
-                return res.status(403).send("No Member Rights");
+            if (user.role_id == 2) {
+                return res.status(403).send("No Admin Rights");
             } else {
                 return next();
             }
@@ -68,7 +38,5 @@ const verifyPermissionAdmin = (req, res, next) => {
 
 export { 
     verifyToken,
-    verifyPermissionMember,
-    verifyPermissionLibrarian,
     verifyPermissionAdmin
 }

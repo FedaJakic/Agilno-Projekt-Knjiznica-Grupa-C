@@ -6,11 +6,6 @@ const Prijava = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  if (localStorage.getItem("token") != null) {
-    //navigate('/'); maknit se ca od tu - vec smo prijavljeni
-    return;
-  }
-
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Pokusavate se prijaviti!", email, password);
@@ -32,11 +27,11 @@ const Prijava = () => {
     .then((data)=>{
         if (data.data.token) {
             localStorage.setItem("token", data.data.token);
-            localStorage.setItem("admin", data.data.admin);
+            localStorage.setItem("user", data.data.user_id);
+            localStorage.setItem("role", data.data.role_id);
             console.log("Uspijesno prijavljeni!");
-            //navigate('/');
+            window.location.href = '/';
         } else {
-            //Ispisat poruku da stvari nisu tocno upisane
             console.log("Authentication error");
         }
     })

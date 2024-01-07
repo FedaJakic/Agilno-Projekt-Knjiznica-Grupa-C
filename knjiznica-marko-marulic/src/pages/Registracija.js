@@ -9,11 +9,6 @@ const Registracija = () => {
 	const [password, setPassword] = useState('');
 	const [datumRodjenja, setDatumRodjenja] = useState('');
 
-	if (localStorage.getItem('token') != null) {
-		//navigate('/'); maknit se ca od tu - vec smo prijavljeni
-		return;
-	}
-
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		console.log(
@@ -44,7 +39,7 @@ const Registracija = () => {
 			.then((resp) => resp.json())
 			.then((data) => {
 				console.log('User Registered!');
-				//navigate('/prijava'); -> Prebacit korisnika na login
+				window.location.href = '/prijava';
 			})
 			.catch((err) => console.log(err));
 	};

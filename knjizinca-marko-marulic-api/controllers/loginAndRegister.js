@@ -82,7 +82,7 @@ router.post(
             { 
                 userId: existingUser.id, 
                 email: existingUser.email,
-                role: existingUser.role_id 
+                role_id: existingUser.role_id 
             },
                 SECRET_KEY,
                 { expiresIn: "3h" }
@@ -97,8 +97,9 @@ router.post(
             .json({
                 success: true,
                 data: {
-                    userId: existingUser.id,
+                    user_id: existingUser.id, //nema potrebe ali eto, moze se i ime dodat i te gluposti
                     token: token,
+                    role_id: existingUser.role_id
                 },
             });
     })

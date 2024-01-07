@@ -5,7 +5,9 @@ import { Link, Redirect } from "react-router-dom";
 const Header = () => {
   function redirect() {
     localStorage.removeItem("token");
-    //redirect('/');
+    localStorage.removeItem("user");
+    localStorage.removeItem("role");
+    window.location.href = '/';
   }
 
   return (
