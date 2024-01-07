@@ -1,6 +1,7 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
 import { Lending } from "../models/Lending.js";
+import { Book } from '../models/Book.js'
 import { roles } from "../utils/constants.js";
 import { authorizeUser } from "../utils/auth.js";
 const router = express.Router();
@@ -87,6 +88,11 @@ router.get(
             where: {
               user_id: userId,
             },
+            include: [
+              {
+                model: Book,
+              },
+            ],
         });
         res.status(200).json(reservations);
       } catch (error) {
@@ -107,9 +113,14 @@ router.get(
               user_id: userId,
               return_date: null
             },
+            include: {
+              model: Book
+            }
+
         });
         res.status(200).json(reservations);
       } catch (error) {
+        console.log(error);
         res.status(500).json({ error: error.message });
       }
     })

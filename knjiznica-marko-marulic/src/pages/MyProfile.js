@@ -16,36 +16,57 @@ const UserProfile = {
 
 const MyProfile = () => {
 	const [userProfile, setUserProfile] = useState(UserProfile);
+	const [myLendings, setMyLendings] = useState([])
 	const userId = localStorage.getItem('id');
+	const token = localStorage.getItem("token")
+
+	const fetchUserProfile = async () => {
+		try {
+			const responseUser = await axios.get(
+				`/api/users/userProfile/${userId}`
+			);
+			console.log(responseUser);
+			const roleResponse = await axios.get(
+				`/api/roles/${responseUser.data.role_id}`
+			);
+			const membershipResponse = await axios.get(
+				`/api/memberships/${userId}`
+			);
+
+			setUserProfile({
+				firstName: responseUser.data.first_name,
+				lastName: responseUser.data.last_name,
+				email: responseUser.data.email,
+				dateOfBirth: responseUser.data.date_of_birth,
+				role: roleResponse.data.name,
+				subscriptionExpirationDate:
+					membershipResponse.data?.subscription_end || 'Isteklo',
+			});
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
+	const fetchActiveLendings = async () => {
+		const config = {
+		  headers: {
+			'Authorization': `Bearer ${token}`,
+			'Content-Type': 'application/json',
+		  },
+		};
+		try {
+		  const response = await axios.get("/api/reservation/active/me", config);
+		  setMyLendings(response.data);
+		  console.log(response.data);
+		} catch (error) {
+		  console.error(error);
+		}
+	  };
+
 
 	useEffect(() => {
-		const fetchUserProfile = async () => {
-			try {
-				const responseUser = await axios.get(
-					`/api/users/userProfile/${userId}`
-				);
-				const roleResponse = await axios.get(
-					`/api/roles/${responseUser.data.role_id}`
-				);
-				const membershipResponse = await axios.get(
-					`/api/memberships/${userId}`
-				);
-
-				setUserProfile({
-					firstName: responseUser.data.first_name,
-					lastName: responseUser.data.last_name,
-					email: responseUser.data.email,
-					dateOfBirth: responseUser.data.date_of_birth,
-					role: roleResponse.data.name,
-					subscriptionExpirationDate:
-						membershipResponse.data.subscription_end || 'Nije pretplacen',
-				});
-			} catch (error) {
-				console.error(error);
-			}
-		};
-
 		fetchUserProfile();
+		fetchActiveLendings();
 	}, []);
 
 	return (
@@ -68,22 +89,35 @@ const MyProfile = () => {
 								<br />
 								<strong>Rola:</strong> {userProfile.role}
 								<br />
-								<strong>Istek pretplate:</strong>{' '}
+								<strong>Pretplata do:</strong>{' '}
 								{userProfile.subscriptionExpirationDate}
 							</Card.Text>
 						</Card.Body>
 					</Card>
 				</Col>
 				<Col md={8}>
-					<h2>Najam knjiga</h2>
+					<h2>Trenutno iznajmljene knjige</h2>
+					{myLendings 
+					? (
 					<ListGroup
 						as='ol'
 						numbered
 					>
-						<ListGroup.Item as='li'>Gospodar prstenova</ListGroup.Item>
-						<ListGroup.Item as='li'>Mačak u čizmama</ListGroup.Item>
-						<ListGroup.Item as='li'>Proces</ListGroup.Item>
+						{
+							myLendings.map((lending) => {
+								return (
+								<ListGroup.Item as='li'>
+									<Link to={`/bookDetails/${lending.Book.id}`} className="text-decoration-none text-dark flex-grow-1">
+									{lending.Book.title} 
+									</Link>
+								</ListGroup.Item>
+								)
+							})
+						}
 					</ListGroup>
+					) 
+					: <p>Niste iznajmili niti jednu knjigu.</p>
+				}
 					<Button
 						className='float-end mx-3 my-5'
 						type='submit'
