@@ -41,6 +41,7 @@ router.put(
 			res.status(200).json({
 				message: 'Successfully updated user!',
 				data: updatedInstance,
+				success: true,
 			});
 		} catch (error) {
 			res.status(500).json({ error: error.message });

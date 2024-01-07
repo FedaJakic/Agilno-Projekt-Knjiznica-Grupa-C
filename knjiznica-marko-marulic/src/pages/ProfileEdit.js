@@ -1,14 +1,54 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 const ProfileEdit = () => {
-	const [ime, setIme] = useState('Ivan');
-	const [prezime, setPrezime] = useState('Ivić');
-	const [email, setEmail] = useState('ivan.ivic@example.com');
-	const [datumRodjenja, setDatumRodjenja] = useState('1990-01-01');
+	const [firstName, setFirstName] = useState('');
+	const [lastName, setLastName] = useState('');
+	const [email, setEmail] = useState('');
+	const [dateOfBirth, setDateOfBirth] = useState('');
+	const userId = localStorage.getItem('id');
 
-	const handleSubmit = (e) => {
-		console.log('uredi');
+	useEffect(() => {
+		const fetchUserProfile = async () => {
+			try {
+				const responseUser = await axios.get(
+					`/api/users/userProfile/${userId}`
+				);
+
+				setFirstName(responseUser.data.first_name);
+				setLastName(responseUser.data.last_name);
+				setEmail(responseUser.data.email);
+				setDateOfBirth(responseUser.data.date_of_birth);
+			} catch (error) {
+				console.error(error);
+			}
+		};
+
+		fetchUserProfile();
+	}, []);
+
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+
+		try {
+			const { data } = await axios.put(`/api/users/userProfile/${userId}`, {
+				first_name: firstName,
+				last_name: lastName,
+				email: email,
+				date_of_birth: dateOfBirth,
+			});
+
+			if (data.success) {
+				toast.success('User profile updated successfully');
+			} else {
+				toast.error(data.message);
+			}
+		} catch (error) {
+			console.error(error);
+			toast.error('Error updating profile. Please try again.');
+		}
 	};
 
 	return (
@@ -30,8 +70,8 @@ const ProfileEdit = () => {
 							<Form.Control
 								type='text'
 								placeholder='Unesite ime'
-								value={ime}
-								onChange={(e) => setIme(e.target.value)}
+								value={firstName}
+								onChange={(e) => setFirstName(e.target.value)}
 							/>
 						</Form.Group>
 
@@ -43,8 +83,8 @@ const ProfileEdit = () => {
 							<Form.Control
 								type='text'
 								placeholder='Unesite prezime'
-								value={prezime}
-								onChange={(e) => setPrezime(e.target.value)}
+								value={lastName}
+								onChange={(e) => setLastName(e.target.value)}
 							/>
 						</Form.Group>
 
@@ -68,8 +108,8 @@ const ProfileEdit = () => {
 							<Form.Label>Datum rođenja</Form.Label>
 							<Form.Control
 								type='date'
-								value={datumRodjenja}
-								onChange={(e) => setDatumRodjenja(e.target.value)}
+								value={dateOfBirth}
+								onChange={(e) => setDateOfBirth(e.target.value)}
 							/>
 						</Form.Group>
 
