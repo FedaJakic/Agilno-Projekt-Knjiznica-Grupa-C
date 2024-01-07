@@ -12,7 +12,7 @@ router.get(
   asyncHandler(async (req, res) => {
     try {
       const reservations = await Lending.findAll();
-      res.json(reservations);
+      res.status(200).json(reservations);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -30,7 +30,7 @@ router.get(
                 return_date: null
             }
         });
-        res.json(reservations);
+        res.status(200).json(reservations);
       } catch (error) {
         res.status(500).json({ error: error.message });
       }
@@ -49,7 +49,7 @@ router.get(
                 user_id: userId
             }
         });
-        res.json(reservations);
+        res.status(200).json(reservations);
       } catch (error) {
         res.status(500).json({ error: error.message });
       }
@@ -69,7 +69,7 @@ router.get(
                 return_date: null
             }
         });
-        res.json(reservations);
+        res.status(200).json(reservations);
       } catch (error) {
         res.status(500).json({ error: error.message });
       }
@@ -88,7 +88,7 @@ router.get(
               user_id: userId,
             },
         });
-        res.json(reservations);
+        res.status(200).json(reservations);
       } catch (error) {
         res.status(500).json({ error: error.message });
       }
@@ -108,7 +108,7 @@ router.get(
               return_date: null
             },
         });
-        res.json(reservations);
+        res.status(200).json(reservations);
       } catch (error) {
         res.status(500).json({ error: error.message });
       }
@@ -121,8 +121,10 @@ router.post(
   authorizeUser([roles.admin, roles.member]),
   asyncHandler(async (req, res) => {
     try {
-      const newLending = await Lending.create(req.body);
-      res.json(newLending);
+      const data = req.body
+      data["user_id"] = req.authData.userId;
+      const newLending = await Lending.create(data);
+      res.status(201).json(newLending);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -143,7 +145,7 @@ router.put(
         if (!updatedRows) {
             throw new Error("Nothing updated!")
         }
-        res.json({
+        res.status(200).json({
             message: 'Successfully updated lending!',
             data: updatedInstance
         });
@@ -161,7 +163,7 @@ router.delete(
   asyncHandler(async (req, res) => {
     try {
       await Lending.destroy({ where: { id: req.params.id } });
-      res.json({ message: "Lending deleted." });
+      res.status(200).json({ message: "Lending deleted." });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

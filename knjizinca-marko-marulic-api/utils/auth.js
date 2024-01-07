@@ -24,7 +24,7 @@ export const validateToken = (req) => {
 export const authorizeUser = (roles) => {
   return (req, res, next) => {
     const loggedUser = validateToken(req);
-    if (!roles.some(role => loggedUser.role === role)) throw new Error('Forbidden access');
+    if (!roles.some(role => loggedUser.role_id === role)) throw new Error('Forbidden access');
     req.authData = loggedUser;
     next();
   };

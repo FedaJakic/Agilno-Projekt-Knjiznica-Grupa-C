@@ -9,6 +9,9 @@ const Header = () => {
     localStorage.removeItem("role");
     window.location.href = '/';
   }
+  const firstName = localStorage.getItem("firstName") || undefined
+
+
 
   return (
     <header>
@@ -61,7 +64,13 @@ const Header = () => {
                   color: "white",
                 }}
               >
-                Profil
+               
+                Profil 
+                
+                {firstName && (
+                <span>- {firstName}</span>
+              )}
+             
               </Nav.Link>
               <Button
                 onClick={redirect}

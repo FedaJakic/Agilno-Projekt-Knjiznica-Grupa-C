@@ -27,8 +27,9 @@ const Prijava = () => {
     .then((data)=>{
         if (data.data.token) {
             localStorage.setItem("token", data.data.token);
-            localStorage.setItem("user", data.data.user_id);
-            localStorage.setItem("role", data.data.role_id);
+            localStorage.setItem("id", data.data.user_id);
+            localStorage.setItem("role", data.data.role);
+            localStorage.setItem("firstName", data.data.first_name);
             console.log("Uspijesno prijavljeni!");
             window.location.href = '/';
         } else {

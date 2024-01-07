@@ -7,7 +7,11 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 const HomeScreen = () => {
   const [books, setBooks] = useState([]);
+  const [myLendings, setMyLendings] = useState([]);
+
   const [search, setSearch] = useState("");
+  const role = localStorage.getItem("role")
+  const token = localStorage.getItem("token")
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -23,8 +27,27 @@ const HomeScreen = () => {
     fetchBooks();
   }, []);
 
+  const fetchActiveLendings = async () => {
+    const config = {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    };
+    try {
+      const response = await axios.get("/api/reservation/active/me", config);
+      setMyLendings(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+  useEffect(() => {
+    fetchActiveLendings();
+  }, []);
+
   const handleDelete = async (id) => {
-    console.log(id);
     try {
       const { data } = await axios.delete(`/api/knjiznica/knjige/books/${id}`);
 
@@ -33,6 +56,37 @@ const HomeScreen = () => {
       } else {
         window.location.reload();
         toast.success("Successful Delete");
+      }
+    } catch (error) {
+      if (
+        error.response &&
+        error.response.status >= 400 &&
+        error.response.status <= 500
+      ) {
+        toast.error(error.message);
+      }
+    }
+  };
+
+  const handleLent = async (book_id) => {
+    const data = {
+      lent_date: new Date(),
+      book_id
+    }
+    const config = {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    };
+ 
+    try {
+      const { response } = await axios.post(`/api/reservation`, data, config);
+      if (response) {
+        toast.error(response.error);
+      } else {
+        toast.success("Knjiga iznajmljena!");
+        fetchActiveLendings()
       }
     } catch (error) {
       if (
@@ -55,6 +109,7 @@ const HomeScreen = () => {
         }}
       >
         <h1 className="text-center">Knjige</h1>
+        {role === '2' && (
         <p className="fw-bold fs-2 m-1" style={{ color: "#ffe6a7" }}>
           <Link to="/addBook">
             <Button variant="primary" className="m-2">
@@ -62,6 +117,7 @@ const HomeScreen = () => {
             </Button>
           </Link>
         </p>
+        )}
         <nav className="navbar navbar-light bg-light">
           <form className="container-fluid">
             <div className="input-group">
@@ -98,21 +154,39 @@ const HomeScreen = () => {
                     >
                       {book.title}
                     </Link>
-                    <Button variant="info" size="sm" className="m-1 ">
-                      <Link
-                        to={`/updateBook/${book.id}`}
-                        className="text-decoration-none text-dark flex-grow-1"
+
+                    {role === '1' && (
+                      <Button 
+                        variant="info" 
+                        size="sm" 
+                        className={`m-1 ${myLendings.some((lending) => lending.book_id === book.id) ? 'disabled' : ''}`}
+                        onClick={() => handleLent(book.id)}  
                       >
-                        Uredi
-                      </Link>
-                    </Button>
-                    <Button
-                      size="sm"
-                      className="m-1"
-                      onClick={() => handleDelete(book.id)}
-                    >
-                      Izbriši
-                    </Button>
+                        Iznajmi
+                      </Button>
+                    )}
+
+                    {role === '2' && (
+                      <>
+                        <Button variant="info" size="sm" className="m-1">
+                          <Link
+                            to={`/updateBook/${book.id}`}
+                            className="text-decoration-none text-dark flex-grow-1"
+                          >
+                             Uredi
+                          </Link>
+                         </Button>
+                        <Button
+                          size="sm"
+                          className="m-1"
+                          onClick={() => handleDelete(book.id)}
+                        >
+                          Izbriši
+                        </Button>
+                      </>
+                    )}
+                    
+           
                   </td>
 
                   <td>{book.release_date}</td>

@@ -77,12 +77,13 @@ router.post(
         }
         let token;
         try {
+            console.log(existingUser);
             //Creating jwt token
             token = jwt.sign(
             { 
                 userId: existingUser.id, 
                 email: existingUser.email,
-                role_id: existingUser.role_id 
+                role_id: existingUser.role_id,
             },
                 SECRET_KEY,
                 { expiresIn: "3h" }
@@ -97,9 +98,10 @@ router.post(
             .json({
                 success: true,
                 data: {
-                    user_id: existingUser.id, //nema potrebe ali eto, moze se i ime dodat i te gluposti
+                    user_id: existingUser.id,
                     token: token,
-                    role_id: existingUser.role_id
+                    role: existingUser.role_id,
+                    first_name: existingUser.first_name
                 },
             });
     })
