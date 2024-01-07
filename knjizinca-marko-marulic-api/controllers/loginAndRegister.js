@@ -3,8 +3,8 @@ import jwt from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
 import { User } from "../models/User.js";
 import { verifyToken } from "../utility/authHelpers.js";
-
 import { config } from 'dotenv';
+
 config();
 const SECRET_KEY = process.env.SECRET_KEY;
 
@@ -36,7 +36,7 @@ router.post(
     "/registracija",
     asyncHandler(async (req, res, next) => {
         const { ime, prezime, email, password, datumRodjenja } = req.body;
-        const role = 5;
+        const role = 1;
 
         try {
             const newUser = await User.create({
@@ -47,8 +47,8 @@ router.post(
                 date_of_birth: datumRodjenja,
                 role_id: role
             });
-        } catch {
-            const error = new Error("Error! Something went wrong.");
+        } catch (err) {
+            const error = new Error(err.message);
             return next(error);
         }
         res
@@ -66,7 +66,7 @@ router.post(
 
         let existingUser;
         try {
-            existingUser = await User.findOne({ where: { email: email } }); //Promijenit ovo
+            existingUser = await User.findOne({ where: { email: email } });
         } catch {
             const error = new Error("Error! Something went wrong.");
             return next(error);
@@ -88,8 +88,7 @@ router.post(
                 { expiresIn: "3h" }
             );
         } catch (err) {
-            console.log(err);
-            const error = new Error("Error! Something went wrong.");
+            const error = new Error(err.message);
             return next(error);
         }
 
@@ -99,7 +98,6 @@ router.post(
                 success: true,
                 data: {
                     userId: existingUser.id,
-                    admin: existingUser.admin,
                     token: token,
                 },
             });

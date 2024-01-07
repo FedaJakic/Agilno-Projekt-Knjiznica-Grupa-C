@@ -1,5 +1,8 @@
 
 import jwt from "jsonwebtoken";
+import { config } from 'dotenv';
+config();
+const SECRET_KEY = process.env.SECRET_KEY;
 
 //Pri pozivima gdje je token potreban treba se dodati ova linija u fetch -> Authorization: "Bearer " + localStorage.getItem("token")
 const verifyToken = (req, res, next) => {
@@ -10,7 +13,7 @@ const verifyToken = (req, res, next) => {
         return res.status(401).send("A token is required for authentication");
     }
     try {
-        const decoded = jwt.verify(token, "gradskaknjiznjicamarkamarulicatajnasifra");
+        const decoded = jwt.verify(token, SECRET_KEY);
         req.user = decoded;
     } catch (err) {
         return res.status(401).send("Invalid Token");
