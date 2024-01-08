@@ -173,7 +173,7 @@ const Knjiznica = () => {
 				className='fw-bold fs-2 m-1'
 				style={{ color: '#ffe6a7' }}
 			>
-				{localStorage.getItem('role') === '2' && (
+				{localStorage.getItem('role') === '1' && (
 					<Link to='/addBook'>
 						<Button
 							variant='primary'
@@ -228,7 +228,7 @@ const Knjiznica = () => {
 										{book.title}
 									</Link>
 
-									{role === '1' && (
+									{role === '2' && (
 										<Button
 											variant='info'
 											size='sm'
@@ -245,7 +245,7 @@ const Knjiznica = () => {
 										</Button>
 									)}
 
-									{role === '2' && (
+									{role === '1' && (
 										<>
 											<Button
 												variant='info'

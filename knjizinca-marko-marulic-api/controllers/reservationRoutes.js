@@ -68,6 +68,9 @@ router.get(
             where: {
                 user_id: userId,
                 return_date: null
+            },
+            include:{
+              model: Book
             }
         });
         res.status(200).json(reservations);

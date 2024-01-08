@@ -1,6 +1,15 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+
+const UserProfile = {
+	firstName: '',
+	lastName: '',
+	email: '',
+	dateOfBirth: '',
+	role: '',
+};
 
 const Header = () => {
 	function redirect() {
@@ -10,7 +19,37 @@ const Header = () => {
 		localStorage.removeItem('firstName');
 		window.location.href = '/';
 	}
+	const token = localStorage.getItem("token") || ''
 	const firstName = localStorage.getItem('firstName') || undefined;
+	const [userProfile, setUserProfile] = useState(UserProfile);
+
+	const fetchUserProfile = async () => {
+		if(token){
+			const config = {
+				headers: {
+				  'Authorization': `Bearer ${token}`,
+				  'Content-Type': 'application/json',
+				},
+			  };
+			  try {
+				  const responseUser = await axios.get(`/api/users/me`, config);
+				  console.log(responseUser);
+				  setUserProfile({
+					  firstName: responseUser.data.data.first_name,
+					  lastName: responseUser.data.data.last_name,
+					  email: responseUser.data.data.email,
+					  dateOfBirth: responseUser.data.data.date_of_birth,
+					  role: responseUser.data.data.role_id,
+				  });
+			  } catch (error) {
+				  console.error(error);
+			  }
+		}
+	};
+
+	useEffect(() => {
+		fetchUserProfile();
+	}, [token]);
 
 	return (
 		<header>
@@ -41,6 +80,19 @@ const Header = () => {
 							>
 								<i className='fa-solid fa-home'></i> Početna
 							</Link>
+
+							{userProfile.role === 1 && 
+								<Link
+									to='/clanovi'
+									className='text-decoration-none mx-1'
+									style={{
+										color: 'white',
+									}}
+								>
+									<i className='fa-solid fa-user-group'></i> Članovi
+								</Link>
+							
+							}
 							<Link
 								to='/knjiznica'
 								className='text-decoration-none  mx-1'

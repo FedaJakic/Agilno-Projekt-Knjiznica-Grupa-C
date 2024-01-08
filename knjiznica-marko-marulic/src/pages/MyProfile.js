@@ -25,7 +25,6 @@ const MyProfile = () => {
 			const responseUser = await axios.get(
 				`/api/users/userProfile/${userId}`
 			);
-			console.log(responseUser);
 			const roleResponse = await axios.get(
 				`/api/roles/${responseUser.data.role_id}`
 			);
