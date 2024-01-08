@@ -4,10 +4,13 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import FilterBooks from '../components/FilterBooks.js';
 
 const Knjiznica = () => {
 	const [books, setBooks] = useState([]);
 	const [myLendings, setMyLendings] = useState([]);
+	const [selectedAuthorFilters, setSelectedAuthorFilters] = useState([]);
+	const [selectedGenreFilters, setSelectedGenreFilters] = useState([]);
 
 	const [search, setSearch] = useState('');
 	const role = localStorage.getItem('role');
@@ -16,9 +19,10 @@ const Knjiznica = () => {
 	useEffect(() => {
 		const fetchBooks = async () => {
 			try {
-				const response = await axios.get('/api/knjiznica/knjige/getAllBooks');
+				const response = await axios.get(
+					'/api/knjiznica/knjige/getAllBooksWithGenre'
+				);
 				setBooks(response.data);
-				console.log(response.data);
 			} catch (error) {
 				console.error(error);
 			}
@@ -37,7 +41,6 @@ const Knjiznica = () => {
 		try {
 			const response = await axios.get('/api/reservation/active/me', config);
 			setMyLendings(response.data);
-			console.log(response.data);
 		} catch (error) {
 			console.error(error);
 		}
@@ -46,6 +49,49 @@ const Knjiznica = () => {
 	useEffect(() => {
 		fetchActiveLendings();
 	}, []);
+
+	useEffect(() => {
+		const fetchBooksWithFilter = async () => {
+			try {
+				const response = await axios.get(
+					'/api/knjiznica/knjige/getAllBooksWithGenre'
+				);
+				if (
+					selectedAuthorFilters.length > 0 ||
+					selectedGenreFilters.length > 0
+				) {
+					let filteredBooks = null;
+					if (
+						selectedAuthorFilters.length > 0 &&
+						selectedGenreFilters.length === 0
+					) {
+						filteredBooks = response.data.filter((item) =>
+							selectedAuthorFilters.includes(item.author_id)
+						);
+					} else if (
+						selectedAuthorFilters.length === 0 &&
+						selectedGenreFilters.length > 0
+					) {
+						filteredBooks = response.data.filter((item) =>
+							selectedGenreFilters.includes(item.genre_id)
+						);
+					} else {
+						filteredBooks = response.data.filter((item) =>
+							selectedAuthorFilters.includes(item.author_id)
+						);
+						filteredBooks = filteredBooks.filter((item) =>
+							selectedGenreFilters.includes(item.genre_id)
+						);
+					}
+					setBooks(filteredBooks);
+				} else setBooks(response.data);
+			} catch (error) {
+				console.error(error);
+			}
+		};
+
+		fetchBooksWithFilter();
+	}, [selectedAuthorFilters, selectedGenreFilters]);
 
 	const handleDelete = async (id) => {
 		try {
@@ -99,6 +145,22 @@ const Knjiznica = () => {
 		}
 	};
 
+	const handleAuthorFilterChange = (author) => {
+		setSelectedAuthorFilters((prevFilters) => {
+			return prevFilters.includes(author)
+				? prevFilters.filter((filter) => filter !== author)
+				: [...prevFilters, author];
+		});
+	};
+
+	const handleGenreFilterChange = (genre) => {
+		setSelectedGenreFilters((prevFilters) => {
+			return prevFilters.includes(genre)
+				? prevFilters.filter((filter) => filter !== genre)
+				: [...prevFilters, genre];
+		});
+	};
+
 	return (
 		<Container
 			style={{
@@ -107,11 +169,11 @@ const Knjiznica = () => {
 			}}
 		>
 			<h1 className='text-center'>Knjige</h1>
-			{role === '2' && (
-				<p
-					className='fw-bold fs-2 m-1'
-					style={{ color: '#ffe6a7' }}
-				>
+			<div
+				className='fw-bold fs-2 m-1'
+				style={{ color: '#ffe6a7' }}
+			>
+				{localStorage.getItem('role') === '2' && (
 					<Link to='/addBook'>
 						<Button
 							variant='primary'
@@ -120,8 +182,12 @@ const Knjiznica = () => {
 							Dodaj knjigu+
 						</Button>
 					</Link>
-				</p>
-			)}
+				)}
+				<FilterBooks
+					onAuthorFilterChange={handleAuthorFilterChange}
+					onGenreFilterChange={handleGenreFilterChange}
+				/>
+			</div>
 			<nav className='navbar navbar-light bg-light'>
 				<form className='container-fluid'>
 					<div className='input-group'>
@@ -148,12 +214,6 @@ const Knjiznica = () => {
 				<tbody>
 					{books
 						.filter((book) => {
-							console.log(
-								search.toLowerCase() === ''
-									? book
-									: book.title.toLowerCase().includes(search)
-							);
-
 							return search.toLowerCase() === ''
 								? book
 								: book.title.toLowerCase().includes(search);

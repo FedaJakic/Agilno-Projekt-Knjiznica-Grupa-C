@@ -1,223 +1,244 @@
-import express from "express";
-import asyncHandler from "express-async-handler";
-import { Book } from "../models/Book.js";
-import { Author } from "../models/Author.js";
-import { Genre } from "../models/Genre.js";
-import { BookGenre } from "../models/BookGenre.js";
+import express from 'express';
+import asyncHandler from 'express-async-handler';
+import { Book } from '../models/Book.js';
+import { Author } from '../models/Author.js';
+import { Genre } from '../models/Genre.js';
+import { BookGenre } from '../models/BookGenre.js';
+import sequelize from '../config.js';
 const router = express.Router();
 
 // Read - Dohvaćanje svih knjiga
 router.get(
-  "/getAllBooks",
-  asyncHandler(async (req, res) => {
-    try {
-      const allBooks = await Book.findAll();
-      res.json(allBooks);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  })
+	'/getAllBooks',
+	asyncHandler(async (req, res) => {
+		try {
+			const allBooks = await Book.findAll();
+			res.json(allBooks);
+		} catch (error) {
+			res.status(500).json({ error: error.message });
+		}
+	})
+);
+
+router.get(
+	'/getAllBooksWithGenre',
+	asyncHandler(async (req, res) => {
+		try {
+			const result = await sequelize.query(
+				'SELECT bg.*, gn.name AS genre_name, b.* ' +
+					'FROM books b ' +
+					'LEFT JOIN book_genres bg ON b.id = bg.book_id ' +
+					'LEFT JOIN genres gn ON bg.genre_id = gn.id;',
+				{
+					type: sequelize.QueryTypes.SELECT,
+				}
+			);
+			res.json(result);
+		} catch (error) {
+			res.status(500).json({ error: error.message });
+		}
+	})
 );
 
 // Create - Dodavanje nove knjige
 router.post(
-  "/addBook",
-  asyncHandler(async (req, res) => {
-    console.log(req);
-    const {
-      title,
-      releaseDate,
-      selectedAuthorId,
-      selectedGenres,
-      quantity,
-      description,
-    } = req.body;
+	'/addBook',
+	asyncHandler(async (req, res) => {
+		console.log(req);
+		const {
+			title,
+			releaseDate,
+			selectedAuthorId,
+			selectedGenres,
+			quantity,
+			description,
+		} = req.body;
 
-    try {
-      const parsedQuantity = parseInt(quantity, 10);
+		try {
+			const parsedQuantity = parseInt(quantity, 10);
 
-      if (isNaN(parsedQuantity)) {
-        return res.status(400).json({
-          success: false,
-          message: "Količina mora biti cijeli broj.",
-        });
-      }
+			if (isNaN(parsedQuantity)) {
+				return res.status(400).json({
+					success: false,
+					message: 'Količina mora biti cijeli broj.',
+				});
+			}
 
-      // Dodaj knjigu u tablicu Book
-      const newBook = await Book.create({
-        title,
-        release_date: releaseDate,
-        author_id: selectedAuthorId,
-        quantity: parsedQuantity,
-        description: description,
-      });
+			// Dodaj knjigu u tablicu Book
+			const newBook = await Book.create({
+				title,
+				release_date: releaseDate,
+				author_id: selectedAuthorId,
+				quantity: parsedQuantity,
+				description: description,
+			});
 
-      // Dohvati ID stvorene knjige
-      const createdBookId = newBook.id;
+			// Dohvati ID stvorene knjige
+			const createdBookId = newBook.id;
 
-      // Dodaj žanrove knjige u tablicu BookGenre
-      const bookGenres = selectedGenres.map((genreId) => ({
-        book_id: createdBookId,
-        genre_id: genreId,
-      }));
-      await BookGenre.bulkCreate(bookGenres);
+			// Dodaj žanrove knjige u tablicu BookGenre
+			const bookGenres = selectedGenres.map((genreId) => ({
+				book_id: createdBookId,
+				genre_id: genreId,
+			}));
+			await BookGenre.bulkCreate(bookGenres);
 
-      res.status(201).json({
-        success: true,
-        message: "Knjiga uspješno dodana.",
-        book: newBook,
-      });
-    } catch (error) {
-      console.error("Server error:", error.response.data);
-      res.status(500).json({
-        success: false,
-        message: "Greška prilikom dodavanja knjige.",
-        error: error.message,
-      });
-    }
-  })
+			res.status(201).json({
+				success: true,
+				message: 'Knjiga uspješno dodana.',
+				book: newBook,
+			});
+		} catch (error) {
+			console.error('Server error:', error.response.data);
+			res.status(500).json({
+				success: false,
+				message: 'Greška prilikom dodavanja knjige.',
+				error: error.message,
+			});
+		}
+	})
 );
 
 // Delete - Brisanje određene knjige
 router.delete(
-  "/books/:id",
-  asyncHandler(async (req, res) => {
-    try {
-      await BookGenre.destroy({ where: { book_id: req.params.id } });
-      const deletedRows = await Book.destroy({ where: { id: req.params.id } });
+	'/books/:id',
+	asyncHandler(async (req, res) => {
+		try {
+			await BookGenre.destroy({ where: { book_id: req.params.id } });
+			const deletedRows = await Book.destroy({ where: { id: req.params.id } });
 
-      if (deletedRows > 0) {
-        res.status(200).json({
-          success: true,
-          message: "Knjiga uspješno obrisana.",
-        });
-      } else {
-        res.status(404).json({
-          success: false,
-          message: "Knjiga s traženim ID-om nije pronađena.",
-        });
-      }
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: "Greška prilikom brisanja knjige.",
-        error: error.message,
-      });
-    }
-  })
+			if (deletedRows > 0) {
+				res.status(200).json({
+					success: true,
+					message: 'Knjiga uspješno obrisana.',
+				});
+			} else {
+				res.status(404).json({
+					success: false,
+					message: 'Knjiga s traženim ID-om nije pronađena.',
+				});
+			}
+		} catch (error) {
+			res.status(500).json({
+				success: false,
+				message: 'Greška prilikom brisanja knjige.',
+				error: error.message,
+			});
+		}
+	})
 );
 
 // Update - Ažuriranje postojeće knjige
 router.put(
-  "/updateBook/:id",
-  asyncHandler(async (req, res) => {
-    const {
-      title,
-      releaseDate,
-      selectedAuthorId,
-      selectedGenres,
-      quantity,
-      description,
-    } = req.body;
-    const bookId = req.params.id;
+	'/updateBook/:id',
+	asyncHandler(async (req, res) => {
+		const {
+			title,
+			releaseDate,
+			selectedAuthorId,
+			selectedGenres,
+			quantity,
+			description,
+		} = req.body;
+		const bookId = req.params.id;
 
-    try {
-      const existingBook = await Book.findByPk(bookId);
+		try {
+			const existingBook = await Book.findByPk(bookId);
 
-      if (!existingBook) {
-        return res.status(404).json({
-          success: false,
-          message: "Knjiga nije pronađena.",
-        });
-      }
+			if (!existingBook) {
+				return res.status(404).json({
+					success: false,
+					message: 'Knjiga nije pronađena.',
+				});
+			}
 
-      const parsedQuantity = parseInt(quantity, 10);
+			const parsedQuantity = parseInt(quantity, 10);
 
-      if (isNaN(parsedQuantity)) {
-        return res.status(400).json({
-          success: false,
-          message: "Količina mora biti cijeli broj.",
-        });
-      }
+			if (isNaN(parsedQuantity)) {
+				return res.status(400).json({
+					success: false,
+					message: 'Količina mora biti cijeli broj.',
+				});
+			}
 
-      await existingBook.update({
-        title,
-        release_date: releaseDate,
-        author_id: selectedAuthorId,
-        quantity: parsedQuantity,
-        description: description,
-      });
+			await existingBook.update({
+				title,
+				release_date: releaseDate,
+				author_id: selectedAuthorId,
+				quantity: parsedQuantity,
+				description: description,
+			});
 
-      // Ažuriraj žanrove knjige
-      await BookGenre.destroy({ where: { book_id: bookId } });
-      const updatedBookGenres = selectedGenres.map((genreId) => ({
-        book_id: bookId,
-        genre_id: genreId,
-      }));
-      await BookGenre.bulkCreate(updatedBookGenres);
+			// Ažuriraj žanrove knjige
+			await BookGenre.destroy({ where: { book_id: bookId } });
+			const updatedBookGenres = selectedGenres.map((genreId) => ({
+				book_id: bookId,
+				genre_id: genreId,
+			}));
+			await BookGenre.bulkCreate(updatedBookGenres);
 
-      res.status(200).json({
-        success: true,
-        message: "Knjiga uspješno ažurirana.",
-      });
-    } catch (error) {
-      console.error("Server error:", error.response.data);
-      res.status(500).json({
-        success: false,
-        message: "Greška prilikom ažuriranja knjige.",
-        error: error.message,
-      });
-    }
-  })
+			res.status(200).json({
+				success: true,
+				message: 'Knjiga uspješno ažurirana.',
+			});
+		} catch (error) {
+			console.error('Server error:', error.response.data);
+			res.status(500).json({
+				success: false,
+				message: 'Greška prilikom ažuriranja knjige.',
+				error: error.message,
+			});
+		}
+	})
 );
 
 // Read - Dohvaćanje određene knjige
 router.get(
-  "/books/:id",
-  asyncHandler(async (req, res) => {
-    try {
-      const bookId = req.params.id;
+	'/books/:id',
+	asyncHandler(async (req, res) => {
+		try {
+			const bookId = req.params.id;
 
-      const book = await Book.findByPk(bookId, {
-        include: [
-          {
-            model: Author,
-            attributes: ["first_name", "last_name", "id"],
-          },
-          {
-            model: Genre,
-            attributes: ["name", "id"],
-            through: {
-              model: BookGenre,
-              attributes: [],
-            },
-          },
-        ],
-        attributes: ["title", "release_date", "quantity", "description"],
-      });
+			const book = await Book.findByPk(bookId, {
+				include: [
+					{
+						model: Author,
+						attributes: ['first_name', 'last_name', 'id'],
+					},
+					{
+						model: Genre,
+						attributes: ['name', 'id'],
+						through: {
+							model: BookGenre,
+							attributes: [],
+						},
+					},
+				],
+				attributes: ['title', 'release_date', 'quantity', 'description'],
+			});
 
-      if (!book) {
-        return res.status(404).json({ message: "Knjiga nije pronađena." });
-      }
+			if (!book) {
+				return res.status(404).json({ message: 'Knjiga nije pronađena.' });
+			}
 
-      res.json(book);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  })
+			res.json(book);
+		} catch (error) {
+			res.status(500).json({ error: error.message });
+		}
+	})
 );
 
 // Read - Dohvaćanje zanrova
 router.get(
-  "/getAllGenres",
-  asyncHandler(async (req, res) => {
-    try {
-      const allGenres = await Genre.findAll();
-      res.json(allGenres);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  })
+	'/getAllGenres',
+	asyncHandler(async (req, res) => {
+		try {
+			const allGenres = await Genre.findAll();
+			res.json(allGenres);
+		} catch (error) {
+			res.status(500).json({ error: error.message });
+		}
+	})
 );
 
 export default router;
