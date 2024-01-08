@@ -10,6 +10,7 @@ import reservationRoutes from './controllers/reservationRoutes.js';
 import userRoutes from './controllers/userRoutes.js';
 import rolesRoutes from './controllers/rolesRoutes.js';
 import membershipsRoutes from './controllers/membershipsRoutes.js';
+import genresRoutes from './controllers/genresRoutes.js';
 import { testConnection, syncDatabase } from './db.js';
 
 dotenv.config();
@@ -60,3 +61,4 @@ app.use('/api/reservation', reservationRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/roles', rolesRoutes);
 app.use('/api/memberships', membershipsRoutes);
+app.use('/api/genre', genresRoutes);
