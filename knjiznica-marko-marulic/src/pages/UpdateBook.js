@@ -1,5 +1,13 @@
 import React from "react";
-import { Container, Form, Row, Col, Card, Button } from "react-bootstrap";
+import {
+  Container,
+  Form,
+  Row,
+  Col,
+  Card,
+  Button,
+  Modal,
+} from "react-bootstrap";
 import { useState, useEffect } from "react";
 import Select from "react-select";
 import { useParams, useHistory } from "react-router-dom";
@@ -16,6 +24,11 @@ const UpdateBook = () => {
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [quantity, setQuantity] = useState("");
   const [description, setDescription] = useState("");
+
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [authorName, setAuthorName] = useState("");
+  const [authorSurname, setAuthorSurname] = useState("");
+  const [authorBirthDate, setAuthorBirthDate] = useState(new Date());
   const history = useHistory();
   const { id } = useParams();
   useEffect(() => {
@@ -103,13 +116,48 @@ const UpdateBook = () => {
 
       if (data.success) {
         toast.success("Book updated successfully");
-        history.push("/");
+        history.push("/knjiznica");
       } else {
         toast.error(data.message);
       }
     } catch (error) {
       console.error(error);
       toast.error("Error updating book. Please try again.");
+    }
+  };
+
+  const handleOpenPopup = () => {
+    setIsPopupOpen(true);
+  };
+
+  const handleClosePopup = () => {
+    setIsPopupOpen(false);
+  };
+
+  const addAuthor = async (e) => {
+    e.preventDefault();
+    if (!authorName || !authorSurname || !authorBirthDate) {
+      toast.error("Molimo vas da popunite sva polja.");
+      return;
+    }
+
+    try {
+      const { data } = await axios.post("/api/knjiznica/autori/addAuthor", {
+        authorName: authorName,
+        authorSurname: authorSurname,
+        authorBirthDate: authorBirthDate,
+      });
+
+      if (data.success) {
+        toast.success("Author added successfully");
+        handleClosePopup();
+        window.location.reload();
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Error adding author. Please try again.");
     }
   };
 
@@ -143,6 +191,59 @@ const UpdateBook = () => {
                     classNamePrefix="select"
                     onChange={handleAuthorSelect}
                   />
+                  <Button size="sm m-1" onClick={handleOpenPopup}>
+                    Dodaj novog autora
+                  </Button>
+
+                  {/* Pop-up forma */}
+                  <Modal show={isPopupOpen} onHide={handleClosePopup}>
+                    <Modal.Header closeButton>
+                      <Modal.Title>Dodaj novog autora</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      <Form onSubmit={addAuthor}>
+                        <Form.Group
+                          className="mb-2 fw-bold"
+                          controlId="formBasicName"
+                        >
+                          <Form.Label>Ime autora</Form.Label>
+                          <Form.Control
+                            type="text"
+                            placeholder="Unesi ime autora"
+                            value={authorName}
+                            onChange={(e) => setAuthorName(e.target.value)}
+                          />
+                        </Form.Group>
+                        <Form.Group
+                          className="mb-2 fw-bold"
+                          controlId="formBasicName"
+                        >
+                          <Form.Label>Prezime autora</Form.Label>
+                          <Form.Control
+                            type="text"
+                            placeholder="Unesi prezime autora"
+                            value={authorSurname}
+                            onChange={(e) => setAuthorSurname(e.target.value)}
+                          />
+                        </Form.Group>
+                        <Form.Group
+                          className="mb-2 fw-bold d-flex flex-column"
+                          controlId="formBasicName"
+                        >
+                          <Form.Label>Datum rođenja</Form.Label>
+                          <DatePicker
+                            selected={authorBirthDate}
+                            onChange={(date) => setAuthorBirthDate(date)}
+                          />
+                        </Form.Group>
+                      </Form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button variant="secondary" onClick={addAuthor}>
+                        Dodaj
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
                 </Form.Group>
                 <Form.Group
                   className="mb-2 fw-bold d-flex flex-column"
