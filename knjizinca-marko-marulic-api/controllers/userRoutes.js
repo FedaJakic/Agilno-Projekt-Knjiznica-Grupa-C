@@ -1,7 +1,57 @@
 import express from 'express';
 import asyncHandler from 'express-async-handler';
+import { roles } from '../utils/constants.js';
+import { authorizeUser } from '../utils/auth.js';
 import { User } from '../models/User.js';
+import { Role } from '../models/Role.js';
 const router = express.Router();
+
+
+// @desc    Retirve All users
+// @route   GET /api/users
+// @access  Public
+router.get(
+	'/',
+	authorizeUser([roles.admin]),
+	asyncHandler(async (req, res) => {
+		try {
+			const users = await User.findAll();
+			res.status(200).json({
+				message: 'Successfully retrieved users!',
+				data: users,
+				success: true,
+			});
+		} catch (error) {
+			res.status(500).json({ error: error.message });
+		}
+	})
+);
+
+// @desc    Retirve All users
+// @route   GET /api/users
+// @access  Public
+router.get(
+	'/me',
+	authorizeUser([roles.admin, roles.member]),
+	asyncHandler(async (req, res) => {
+		try {
+			const me = req.authData
+			console.log(me);
+			const user = await User.findOne({
+				where: {
+					id: me.userId
+				}
+			});
+			res.status(200).json({
+				message: 'Successfully retrieved logged user!',
+				data: user,
+				success: true,
+			});
+		} catch (error) {
+			res.status(500).json({ error: error.message });
+		}
+	})
+);
 
 // @desc    Get user by ID
 // @route   GET /api/users/userProfile/:userId
@@ -48,5 +98,7 @@ router.put(
 		}
 	})
 );
+
+
 
 export default router;

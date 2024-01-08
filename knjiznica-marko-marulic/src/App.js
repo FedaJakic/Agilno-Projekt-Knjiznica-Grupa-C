@@ -13,6 +13,8 @@ import axios from 'axios';
 import { Toaster } from 'react-hot-toast';
 import ProfileEdit from './pages/ProfileEdit';
 import Knjiznica from './pages/Knjiznica';
+import Clanovi from './pages/Clanovi';
+import UserLendings from './pages/UserLendings';
 
 axios.defaults.baseURL = 'http://localhost:5000';
 axios.defaults.withCredentials = true;
@@ -49,6 +51,16 @@ const App = () => {
 				<Route
 					path='/profil-edit'
 					component={ProfileEdit}
+					exact
+				/>
+				<Route
+					path='/clanovi'
+					component={Clanovi}
+					exact
+				/>
+				<Route
+					path='/knjige/clan/:id'
+					component={UserLendings}
 					exact
 				/>
 				<Route
