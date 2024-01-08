@@ -48,7 +48,7 @@ const Header = () => {
 									color: 'white',
 								}}
 							>
-								<i class='fa-solid fa-book mx-1'></i> Knjižnica
+								<i className='fa-solid fa-book mx-1'></i> Knjižnica
 							</Link>
 							<Link
 								to='/profil'
