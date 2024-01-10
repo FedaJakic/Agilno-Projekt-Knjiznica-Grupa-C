@@ -11,6 +11,7 @@ const Knjiznica = () => {
 	const [myLendings, setMyLendings] = useState([]);
 	const [selectedAuthorFilters, setSelectedAuthorFilters] = useState([]);
 	const [selectedGenreFilters, setSelectedGenreFilters] = useState([]);
+	const [membership, setMembership] = useState(null)
 
 	const [search, setSearch] = useState('');
 	const role = localStorage.getItem('role');
@@ -29,6 +30,23 @@ const Knjiznica = () => {
 		};
 
 		fetchBooks();
+
+		const fetchMembershipStatus = async() => {
+			const config = {
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+				},
+			};
+			try {
+				const response = await axios.get('/api/memberships/user/status', config);
+				setMembership(response.data.status);
+			} catch (error) {
+				console.error(error);
+			}
+		}
+
+		fetchMembershipStatus()
 	}, []);
 
 	const fetchActiveLendings = async () => {
@@ -233,15 +251,13 @@ const Knjiznica = () => {
 											variant='info'
 											size='sm'
 											className={`m-1 ${
-												myLendings.some(
-													(lending) => lending.book_id === book.id
-												)
+												myLendings.some((lending) => lending.book_id === book.id) || book.quantity < 1 || !membership
 													? 'disabled'
 													: ''
 											}`}
 											onClick={() => handleLent(book.id)}
 										>
-											Iznajmi
+											{book.quantity < 1 ? 'Nestalo' : 'Iznajmi'}
 										</Button>
 									)}
 

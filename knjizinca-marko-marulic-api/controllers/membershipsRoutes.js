@@ -102,16 +102,19 @@ router.get(
         }
 
 		//Check if exists
-        if (memberStatus.length > 0) {
+        if (memberStatus.length < 1) {
             res.status(200).json({status: false});
+            return
         }
 
 		//Check if active
 		let today = new Date();
 		const dates = memberStatus[0].subscription_end.split('-');
 		let tmp = new Date(dates[0] + "-" + dates[1] + "-" + dates[2] + "T00:00:00.000Z");
-		if (tmp > today) {
+
+		if (new Date(tmp) < new Date(today)) {
 			res.status(200).json({status: false});
+            return
 		}
         res.status(200).json({status: true});
     })
@@ -124,6 +127,7 @@ router.post(
     "/extend",
     verifyToken,
     asyncHandler(async(req, res, next) => {
+        console.log('a');
         let memberStatus;
 		//try to get last sub
         try {
