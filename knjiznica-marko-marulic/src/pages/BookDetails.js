@@ -3,7 +3,6 @@ import { Row, Col, Container, Card, ListGroup, Button, FloatingLabel, Form } fro
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Rating } from 'react-simple-star-rating'
 import { toast } from "react-hot-toast";
 import bookImage from '../images/book.jpg';
 
@@ -194,9 +193,9 @@ const BookDetails = () => {
     </div>
     <div>
     <section>
-    <div className="container">
-        <div className="row">
-            <div className="col-sm-5 col-md-6 col-12 pb-4">
+    <Container>
+        <Row>
+            <Col>
                 <h1>Reviews</h1>
                 <Container
                   style={{
@@ -213,14 +212,13 @@ const BookDetails = () => {
                     <p>{review.review_text}</p>
                     <div>
                       <p className='mb-0'>Rated:</p>
-                      <Rating className='mb-3' size='25' initialValue={review.rating} readonly={true}/>
                     </div>
                   </div>
                   ))}
                 </div>
                 </Container>
-            </div>
-            <div className="col-lg-4 col-md-5 col-sm-4 offset-md-1 offset-sm-1 col-12 mt-4">
+            </Col>
+            <Col>
                 <Form id="algin-htmlForm" onSubmit={createReview()}>
                     <div className="htmlForm-group">
                         <h4>Leave a comment</h4>
@@ -236,17 +234,14 @@ const BookDetails = () => {
                     </div>
                     <div className="pt-3">
                       <h6>Your rating:</h6>
-                      <Rating
-                        onClick={handleRating}
-                      />
                     </div>
                     <div className="htmlForm-group">
                       <Button type='submit' className='mt-4' variant="primary">Submit</Button>
                     </div>
                 </Form>
-            </div>
-        </div>
-    </div>
+            </Col>
+        </Row>
+    </Container>
     </section>
     </div>
     </div>
