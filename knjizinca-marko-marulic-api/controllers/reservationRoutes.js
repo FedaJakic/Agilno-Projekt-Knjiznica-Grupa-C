@@ -4,6 +4,7 @@ import { Lending } from "../models/Lending.js";
 import { Book } from '../models/Book.js'
 import { roles } from "../utils/constants.js";
 import { authorizeUser } from "../utils/auth.js";
+import { Sequelize } from "sequelize";
 const router = express.Router();
 
 // get all reservations
@@ -129,6 +130,21 @@ router.get(
     })
   );
 
+
+
+const updateBookQuantity = async(operation, updatedInstance) => {
+    const bookId =updatedInstance?.book_id  || updatedInstance[0].book_id; 
+    const book = await Book.findByPk(bookId); 
+  
+    if (book) {
+      await book.update({
+        quantity: Sequelize.literal(`quantity ${operation} 1`), 
+      });
+    } else {
+      throw new Error("Book not found!");
+    }
+  }
+
 // Create book lending
 router.post(
   "/",
@@ -138,12 +154,15 @@ router.post(
       const data = req.body
       data["user_id"] = req.authData.userId;
       const newLending = await Lending.create(data);
+
+      await updateBookQuantity("-", newLending)
       res.status(201).json(newLending);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   })
 );
+
 
 // Update book lending
 router.put(
@@ -159,6 +178,9 @@ router.put(
         if (!updatedRows) {
             throw new Error("Nothing updated!")
         }
+
+        await updateBookQuantity("+", updatedInstance)
+
         res.status(200).json({
             message: 'Successfully updated lending!',
             data: updatedInstance
