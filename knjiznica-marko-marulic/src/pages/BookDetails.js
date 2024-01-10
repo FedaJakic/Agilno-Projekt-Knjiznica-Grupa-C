@@ -24,11 +24,11 @@ const BookDetails = () => {
     return year + "-" + month + "-" + (day+1);
   }
 
-  const handleRating = (rate) => {
-    setRating(rate)
-  }
+  const handleStarClick = (value) => {
+    setRating(value);
+  };
 
-  const createReview = async (e) => {
+  const createReview = async () => {
     if (
       !id ||
       !rating ||
@@ -55,7 +55,6 @@ const BookDetails = () => {
       
       if (data.success) {
         toast.success("Review added successfully");
-        //history.push("/");
       } else {
         toast.error(data.message);
       }
@@ -193,17 +192,16 @@ const BookDetails = () => {
     </div>
     <div>
     <section>
-    <Container>
+    <Container className='pt-5'>
         <Row>
             <Col>
-                <h1>Reviews</h1>
+              <h1>Reviews</h1>
                 <Container
                   style={{
                     height: "600px",
                     overflowY: "scroll",
                   }}
                 >
-                <div className="comment mt-4 text-justify float-left">
                   {reviews.map((review) => (
                   <div key={review.id}>
                     <h4>{userId}</h4>
@@ -212,33 +210,63 @@ const BookDetails = () => {
                     <p>{review.review_text}</p>
                     <div>
                       <p className='mb-0'>Rated:</p>
+                      {[1, 2, 3, 4, 5].map((value) => (
+                    <span
+                      className={`cursor-pointer fs-3 ${
+                      value <= review.rating ? 'text-warning' : 'text-muted'
+                      }`
+                    }
+                    >
+                      &#9733;
+                    </span>
+                ))}
                     </div>
                   </div>
                   ))}
-                </div>
                 </Container>
             </Col>
             <Col>
-                <Form id="algin-htmlForm" onSubmit={createReview()}>
-                    <div className="htmlForm-group">
-                        <h4>Leave a comment</h4>
-                        <label htmlFor="message">Message</label>
-                        <FloatingLabel controlId="floatingTextarea2" label="Comments">
-                          <Form.Control
-                            as="textarea"
-                            placeholder="Leave a comment here"
-                            style={{ height: '100px' }}
-                            onChange={(e) => setComment(e.target.value)}
-                          />
-                        </FloatingLabel>                    
-                    </div>
-                    <div className="pt-3">
-                      <h6>Your rating:</h6>
-                    </div>
-                    <div className="htmlForm-group">
-                      <Button type='submit' className='mt-4' variant="primary">Submit</Button>
-                    </div>
-                </Form>
+            <Form className='d-flex flex-column justify-content-center align-items-center' onSubmit={createReview}>
+              <h4>Pošalji review</h4>
+						  <Form.Group
+							  className='my-2 w-50'
+							  controlId='formIme'
+						  >
+							  <Form.Label>Komentar</Form.Label>
+							  <Form.Control as="textarea" rows={5} style={{ width: '350px' }} onChange={(e) => setComment(e.target.value)}/>
+						  </Form.Group>
+
+						  <Form.Group
+							  className='my-2 w-50'
+							  controlId='formPrezime'
+						  >
+                <Row>
+							    <Form.Label>Rejting</Form.Label>
+                </Row>
+                <Col>
+                <Form.Group>
+                {[1, 2, 3, 4, 5].map((value) => (
+                    <span
+                      className={`cursor-pointer fs-3 ${
+                      value <= rating ? 'text-warning' : 'text-muted'
+                      }`}
+                      onClick={() => handleStarClick(value)}
+                    >
+                      &#9733;
+                    </span>
+                ))}
+                </Form.Group>
+                </Col>
+						  </Form.Group>
+
+						  <Button
+							  className='my-2 w-50'
+							  variant='primary'
+							  type='submit'
+						  >
+							  Submit
+						  </Button>
+					  </Form>
             </Col>
         </Row>
     </Container>
