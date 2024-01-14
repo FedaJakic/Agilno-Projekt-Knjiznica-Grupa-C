@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Image, Card, Button } from 'react-bootstrap';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 import axios from 'axios';
 
 const UserProfile = {
@@ -21,12 +22,22 @@ const MyProfile = () => {
 	const token = localStorage.getItem('token');
 
 	const fetchUserProfile = async () => {
+		const config = {
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'Content-Type': 'application/json',
+			},
+		};
+
 		try {
 			const responseUser = await axios.get(`/api/users/userProfile/${userId}`);
 			const roleResponse = await axios.get(
 				`/api/roles/${responseUser.data.role_id}`
 			);
-			const membershipResponse = await axios.get(`/api/memberships/${userId}`);
+			const membershipResponse = await axios.get(
+				`/api/memberships/user/last`,
+				config
+			);
 
 			setUserProfile({
 				firstName: responseUser.data.first_name,
@@ -57,6 +68,21 @@ const MyProfile = () => {
 			console.error(error);
 		}
 	};
+
+	const extendMembership = () => {
+		const config = {
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'Content-Type': 'application/json',
+			},
+		  };
+		axios.post("/api/memberships/extend", {}, config)
+		.then(() => {
+			toast.success('Uspješno ste produžili pretplatu');
+			fetchUserProfile();
+		});
+	};
+
 
 	useEffect(() => {
 		fetchUserProfile();
@@ -122,6 +148,17 @@ const MyProfile = () => {
 						>
 							Uredi profil
 						</Link>
+					</Button>
+				</Col>
+			</Row>
+			<Row>
+				<Col>
+					<Button
+						className='float mx-3 my-4'
+						type='submit'
+						onClick={extendMembership}
+					>
+						Produži pretplatu
 					</Button>
 				</Col>
 			</Row>

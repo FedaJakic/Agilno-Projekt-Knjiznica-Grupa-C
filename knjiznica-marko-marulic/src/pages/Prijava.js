@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom/cjs/react-router-dom";
+import { toast } from 'react-hot-toast';
 
 const Prijava = () => {
   const [email, setEmail] = useState("");
@@ -23,20 +24,22 @@ const Prijava = () => {
         }),
         headers: {"Content-type": "application/json;charset=UTF-8"}
     })
-    .then((resp)=>resp.json())
-    .then((data)=>{
-        if (data.data.token) {
-            localStorage.setItem("token", data.data.token);
-            localStorage.setItem("id", data.data.user_id);
-            localStorage.setItem("role", data.data.role);
-            localStorage.setItem("firstName", data.data.first_name);
-            console.log("Uspijesno prijavljeni!");
-            window.location.href = '/';
-        } else {
-            console.log("Authentication error");
-        }
+    .then((resp)=>{
+      if (!resp.ok) throw new Error("Unijeli ste krive podatke!");
+      else return resp.json()
     })
-    .catch((err)=>console.log(err));
+    .then((data)=>{
+      localStorage.setItem("token", data.data.token);
+      localStorage.setItem("id", data.data.user_id);
+      localStorage.setItem("role", data.data.role);
+      localStorage.setItem("firstName", data.data.first_name);
+      console.log("Uspijesno prijavljeni!");
+      window.location.href = '/';
+    })
+    .catch((err)=> {
+      console.log(err.message);
+      toast.error(err.message);
+    });
   };
 
   return (

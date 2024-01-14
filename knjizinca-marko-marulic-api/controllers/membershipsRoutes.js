@@ -44,7 +44,7 @@ router.get(
             const error = new Error(err.message);
             return next(error);
         }
-        if (memberStatus.length > 0) {
+        if (memberStatus.length == 0) {
             res.status(200).json(null);
         }
         res.status(200).json(memberStatus);
@@ -72,7 +72,7 @@ router.get(
             const error = new Error(err.message);
             return next(error);
         }
-        if (memberStatus.length > 0) {
+        if (memberStatus.length == 0) {
             res.status(200).json(null);
         }
         res.status(200).json(memberStatus[0]);

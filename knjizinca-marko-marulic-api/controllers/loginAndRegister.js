@@ -69,11 +69,13 @@ router.post(
             existingUser = await User.findOne({ where: { email: email } });
         } catch {
             const error = new Error("Error! Something went wrong.");
-            return next(error);
+            res.status(500).json(error);
+            return;
         }
         if (!existingUser || existingUser.password != password) {
             const error = Error("Wrong details please check at once");
-            return next(error);
+            res.status(500).json(error);
+            return;
         }
         let token;
         try {
