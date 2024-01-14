@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
 
 const ProfileEdit = () => {
+	const metaRefId = useParams();
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
 	const [email, setEmail] = useState('');
 	const [dateOfBirth, setDateOfBirth] = useState('');
-	const userId = localStorage.getItem('id');
+	const userId = metaRefId.userId;
 
 	useEffect(() => {
 		const fetchUserProfile = async () => {
@@ -53,6 +55,7 @@ const ProfileEdit = () => {
 
 	return (
 		<Container>
+			{console.log(userId)}
 			<Row className='justify-content-md-center'>
 				<Col
 					xs={12}

@@ -15,6 +15,7 @@ import ProfileEdit from './pages/ProfileEdit';
 import Knjiznica from './pages/Knjiznica';
 import Clanovi from './pages/Clanovi';
 import UserLendings from './pages/UserLendings';
+import AddUser from './pages/AddUser';
 
 axios.defaults.baseURL = 'http://localhost:5000';
 axios.defaults.withCredentials = true;
@@ -49,8 +50,13 @@ const App = () => {
 					exact
 				/>
 				<Route
-					path='/profil-edit'
+					path='/profil-edit/:userId'
 					component={ProfileEdit}
+					exact
+				/>
+				<Route
+					path='/addUser'
+					component={AddUser}
 					exact
 				/>
 				<Route

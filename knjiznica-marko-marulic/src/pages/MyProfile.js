@@ -16,21 +16,17 @@ const UserProfile = {
 
 const MyProfile = () => {
 	const [userProfile, setUserProfile] = useState(UserProfile);
-	const [myLendings, setMyLendings] = useState([])
+	const [myLendings, setMyLendings] = useState([]);
 	const userId = localStorage.getItem('id');
-	const token = localStorage.getItem("token")
+	const token = localStorage.getItem('token');
 
 	const fetchUserProfile = async () => {
 		try {
-			const responseUser = await axios.get(
-				`/api/users/userProfile/${userId}`
-			);
+			const responseUser = await axios.get(`/api/users/userProfile/${userId}`);
 			const roleResponse = await axios.get(
 				`/api/roles/${responseUser.data.role_id}`
 			);
-			const membershipResponse = await axios.get(
-				`/api/memberships/${userId}`
-			);
+			const membershipResponse = await axios.get(`/api/memberships/${userId}`);
 
 			setUserProfile({
 				firstName: responseUser.data.first_name,
@@ -48,20 +44,19 @@ const MyProfile = () => {
 
 	const fetchActiveLendings = async () => {
 		const config = {
-		  headers: {
-			'Authorization': `Bearer ${token}`,
-			'Content-Type': 'application/json',
-		  },
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'Content-Type': 'application/json',
+			},
 		};
 		try {
-		  const response = await axios.get("/api/reservation/active/me", config);
-		  setMyLendings(response.data);
-		  console.log(response.data);
+			const response = await axios.get('/api/reservation/active/me', config);
+			setMyLendings(response.data);
+			console.log(response.data);
 		} catch (error) {
-		  console.error(error);
+			console.error(error);
 		}
-	  };
-
+	};
 
 	useEffect(() => {
 		fetchUserProfile();
@@ -96,34 +91,34 @@ const MyProfile = () => {
 				</Col>
 				<Col md={8}>
 					<h2>Trenutno iznajmljene knjige</h2>
-					{myLendings 
-					? (
-					<ListGroup
-						as='ol'
-						numbered
-					>
-						{
-							myLendings.map((lending) => {
+					{myLendings ? (
+						<ListGroup
+							as='ol'
+							numbered
+						>
+							{myLendings.map((lending) => {
 								return (
-								<ListGroup.Item as='li'>
-									<Link to={`/bookDetails/${lending.Book.id}`} className="text-decoration-none text-dark flex-grow-1">
-									{lending.Book.title} 
-									</Link>
-								</ListGroup.Item>
-								)
-							})
-						}
-					</ListGroup>
-					) 
-					: <p>Niste iznajmili niti jednu knjigu.</p>
-				}
+									<ListGroup.Item as='li'>
+										<Link
+											to={`/bookDetails/${lending.Book.id}`}
+											className='text-decoration-none text-dark flex-grow-1'
+										>
+											{lending.Book.title}
+										</Link>
+									</ListGroup.Item>
+								);
+							})}
+						</ListGroup>
+					) : (
+						<p>Niste iznajmili niti jednu knjigu.</p>
+					)}
 					<Button
 						className='float-end mx-3 my-5'
 						type='submit'
 					>
 						<Link
 							className='header-brand-name'
-							to='/profil-edit'
+							to={`/profil-edit/${userId}`}
 						>
 							Uredi profil
 						</Link>
