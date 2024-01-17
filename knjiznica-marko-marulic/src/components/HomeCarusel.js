@@ -7,10 +7,6 @@ import carusel3 from '../images/carusel3.jpg';
 const HomeScreen = () => {
 	return (
 		<div>
-			<h1 className='text-center my-2'>
-				"Svaka stranica otvara vrata novom svijetu, a svaka knjiga je ključ za
-				beskrajno putovanje uma."
-			</h1>
 			<Carousel className='d-block'>
 				<Carousel.Item>
 					<Carousel.Caption>
@@ -21,7 +17,10 @@ const HomeScreen = () => {
 						>
 							Knjiznica Marko Marulić
 						</h3>
-						<p>"Cum legimus, crescimus"</p>
+						<p>
+							"Svaka stranica otvara vrata novom svijetu, a svaka knjiga je
+							ključ za beskrajno putovanje uma."
+						</p>
 					</Carousel.Caption>
 					<img
 						className='d-block w-100'
@@ -55,7 +54,7 @@ const HomeScreen = () => {
 						>
 							Knjiznica Marko Marulić
 						</h3>
-						<p>"Cum legimus, crescimus"</p>
+						<p>"Knjiga je izvor znanja"</p>
 					</Carousel.Caption>
 					<img
 						className='d-block w-100'
