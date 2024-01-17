@@ -1,7 +1,5 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
-import { Book } from "../models/Book.js";
-import { User } from "../models/User.js";
 import { Review } from "../models/Review.js";
 
 const router = express.Router();
